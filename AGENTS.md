@@ -334,6 +334,20 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
 - **Consecuencia:** la sección 3 solo imprime tamaños del dataset y estadísticas de texto; el
   máximo de caracteres observado en `train` es 908, holgado frente a `max_len=512`.
 
+### D-029 · 2026-11-03 · Exploración ampliada de la sección 3
+- **Decisión:** además de cargar el dataset, la sección 3 verifica que no haya `task_id` repetidos
+  entre splits, compara los tres splits con las mismas medidas, revisa con `ast` cuántas soluciones
+  traen imports, clases o funciones auxiliares, grafica las longitudes y mira `challenge_test_list`
+  y el split `prompt`.
+- **Motivo:** la fuga de datos es el error más caro del proyecto y se descarta con una comprobación
+  explícita; la comparación entre splits demuestra que `test` es representativo; la estructura del
+  código justifica que el target sea la solución completa y no solo el cuerpo de la función.
+- **Descartado:** dejar la exploración en cinco celdas (cumple, pero no deja evidencia de la
+  separación de splits ni de la complejidad real de las soluciones).
+- **Consecuencia:** la sección 3 pasa de 5 a 11 celdas de código y agrega una figura. Sigue sin
+  cargar tokenizadores ni modelos (D-028) y el código mantiene el estilo básico de D-015, sin
+  comentarios dentro del código (D-013).
+
 ---
 
 ## 4. Reglas duras del proyecto (no negociables)

@@ -53,8 +53,12 @@ solo se hacen cuando él lo pide.
 - Carga de `google-research-datasets/mbpp` configuración `full` con revisión fija.
 - Descripción de los splits `train` (374), `validation` (90), `test` (500) y `prompt` (10).
 - Ejemplos reales de `text`, `code`, `test_list` y `test_setup_code`.
+- Verificación de que ningún `task_id` se repite entre splits.
+- Tabla comparativa de los tres splits y percentiles de largo en `train`, con histograma.
+- Estructura del código con `ast`: imports, clases y funciones auxiliares.
+- Revisión de `challenge_test_list` y de un ejemplo del split `prompt`.
 - Longitudes en caracteres y palabras; el conteo en tokens se hace en la sección 4, cuando ya
-  está cargado el tokenizador de cada modelo (D-027).
+  está cargado el tokenizador de cada modelo (D-028).
 - **Lista cuando:** se imprimen los tamaños y ejemplos reales, y Jean aprueba el cierre.
 
 ### Fase 4 — Construcción de prompts y preprocesamiento
