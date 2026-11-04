@@ -76,3 +76,13 @@ Thumbs.db
 *.synctex.gz
 *.fls
 *.fdb_latexmk
+
+# Resultados y notebooks ejecutados (se generan en Colab)
+resultados/
+*_ejecutado.ipynb
+*.tmp.ipynb
+
+# Adaptadores LoRA del proyecto (viven en Drive; se regeneran)
+checkpoint_qwen2.5_1.5b_lora/
+checkpoint_smollm2_1.7b_lora/
+entrega_microproyecto_3.zip
