@@ -1,4 +1,4 @@
-# Documentos del proyecto (instrucciones y anexos, no versionar)
+# Documentos del curso (instrucciones y anexos, no versionar)
 PDF/
 
 # Python
@@ -15,25 +15,53 @@ dist/
 venv/
 env/
 .env
+.env.*
+!.env.example
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
 
 # Jupyter
 .ipynb_checkpoints/
+*.nbconvert.ipynb
 
-# Modelos / binarios generados
+# Entrenamiento / artefactos generados
+checkpoints/
+outputs/
+runs/
+wandb/
+lightning_logs/
 *.pkl
 *.joblib
 *.h5
+*.hdf5
 *.pt
 *.pth
 *.bin
 *.onnx
+*.safetensors
+*.gguf
+
+# Cachés locales de Hugging Face / datasets
+.cache/
+.huggingface/
+hf_cache/
 
 # Logs y temporales
 *.log
 *.tmp
+*.bak
+*~
+*.swp
+
+# Empaquetado de la entrega (se sube a Drive, no al repo)
+*.zip
 
 # Editores / SO
 .vscode/
