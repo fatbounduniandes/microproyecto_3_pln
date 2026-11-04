@@ -1,0 +1,50 @@
+# Documentos del proyecto (instrucciones y anexos, no versionar)
+PDF/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+.venv/
+venv/
+env/
+.env
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Modelos / binarios generados
+*.pkl
+*.joblib
+*.h5
+*.pt
+*.pth
+*.bin
+*.onnx
+
+# Logs y temporales
+*.log
+*.tmp
+
+# Editores / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# LaTeX (por si el informe se compila en LaTeX)
+*.aux
+*.toc
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
