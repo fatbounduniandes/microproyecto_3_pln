@@ -12,6 +12,7 @@
 - `build_notebook.py`: ensambla el notebook; no tiene dependencias externas.
 - `AGENTS.md`: bitácora de decisiones de ingeniería.
 - `FASES.md`: checklist de avance, una fase a la vez.
+- `GUIA_MICROPROYECTO_3.md`: instrucciones y recomendaciones consolidadas.
 - `requirements-colab.txt`: versiones de las librerías para Colab.
 - `instrucciones_proyecto/`: extracción de texto de los PDFs para búsqueda.
 - `resultados/`: notebooks ejecutados y resultados (no se versiona).

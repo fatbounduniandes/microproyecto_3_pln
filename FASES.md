@@ -25,9 +25,12 @@ solo se hacen cuando él lo pide.
 ## Detalle de cada fase
 
 ### Fase 0 — Repo y base (no va en el notebook)
-- `AGENTS.md`, `FASES.md`, `README.md`, `.gitignore`, `.gitattributes`.
+- `AGENTS.md`, `FASES.md`, `README.md`, `GUIA_MICROPROYECTO_3.md`, `.gitignore`,
+  `.gitattributes`.
 - `build_notebook.py`, `requirements-colab.txt` y el esqueleto de las 11 secciones en `src/cells/`.
 - `notebook.ipynb` generado desde las celdas fuente.
+- Skills curadas: `mbpp-lora-pass1`, `lora-qlora-recipes`, `peft-fine-tuning`,
+  `python-testing-patterns`, `find-skills`.
 - **Lista cuando:** `python3 build_notebook.py --check` responde `OK` y el notebook tiene las
   11 secciones con los títulos exactos.
 

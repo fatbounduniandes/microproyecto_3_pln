@@ -293,10 +293,24 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
   No se usan TRL, Unsloth, HF Jobs ni frameworks de entrenamiento externos.
 - **Motivo:** la skill `mbpp-lora-pass1` prohíbe frameworks ajenos a los indicados; además, el
   notebook debe correr `Run All` en Colab y ser ejecutable por el evaluador. La skill
-  `huggingface-llm-trainer` se usa solo como referencia de hardware/costos, no como stack.
+  `huggingface-llm-trainer` no se instala; si el harness la ofrece, solo se toma su tabla de
+  hardware/costos, no su stack.
 - **Descartado:** TRL `SFTTrainer` (dependencia extra y menos control del enmascaramiento);
   Unsloth (fuera del stack permitido); HF Jobs (rompe el `Run All` y la entrega autocontenida).
 - **Consecuencia:** el código es más explícito y defendible, aunque un poco más largo.
+
+### D-026 · 2026-11-03 · Gobierno de skills y guía del proyecto
+- **Decisión:** `mbpp-lora-pass1` es la skill obligatoria y manda sobre cualquier skill genérica.
+  Se mantienen `lora-qlora-recipes`, `peft-fine-tuning`, `python-testing-patterns` y
+  `find-skills` como apoyo. Se retiran `trl-training` (TRL prohibido) y `jupyter-notebook` (su
+  scaffolder choca con `build_notebook.py`; su checklist se incorporó a la guía). Se crea
+  `GUIA_MICROPROYECTO_3.md` con las instrucciones y recomendaciones consolidadas.
+- **Motivo:** evitar que skills genéricas contradigan la receta del curso (por ejemplo, all-linear,
+  `alpha=2r`, `dropout=0`), reducir ruido y dejar un único documento de onboarding.
+- **Descartado:** mantener todas las skills instaladas (más conflicto y contexto); eliminar todas
+  las genéricas (se pierden referencias útiles de PEFT y testing).
+- **Consecuencia:** `skills-lock.json` refleja el set nuevo. Las skills genéricas nunca se usan
+  para cambiar los hiperparámetros obligatorios ni para sustituir la evaluación del curso.
 
 ---
 
@@ -399,11 +413,12 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
 ## 8. Estado actual
 
 - [x] `git init`, rama `main`.
-- [x] Skills del proyecto instaladas (`mbpp-lora-pass1`, `lora-qlora-recipes`, `trl-training`,
-      `jupyter-notebook`, `find-skills`).
+- [x] Skills del proyecto curadas: `mbpp-lora-pass1`, `lora-qlora-recipes`,
+      `peft-fine-tuning`, `python-testing-patterns`, `find-skills`. Retiradas `trl-training` y
+      `jupyter-notebook`.
 - [x] `.gitignore` inicial y `.gitattributes`.
-- [x] Fase 0: `AGENTS.md`, `FASES.md`, `README.md`, `build_notebook.py`,
-      `requirements-colab.txt` y esqueleto de las 11 secciones.
+- [x] Fase 0: `AGENTS.md`, `FASES.md`, `README.md`, `GUIA_MICROPROYECTO_3.md`,
+      `build_notebook.py`, `requirements-colab.txt` y esqueleto de las 11 secciones.
 - [x] `build_notebook.py --check` en OK.
 - [ ] Fase 1: Portada e introducción.
 - [ ] Fase 2: Librerías.
