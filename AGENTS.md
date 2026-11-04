@@ -420,7 +420,7 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
 - [x] Fase 0: `AGENTS.md`, `FASES.md`, `README.md`, `GUIA_MICROPROYECTO_3.md`,
       `build_notebook.py`, `requirements-colab.txt` y esqueleto de las 11 secciones.
 - [x] `build_notebook.py --check` en OK.
-- [ ] Fase 1: Portada e introducción.
+- [x] Fase 1: Portada e introducción (escrita y validada localmente; push pendiente).
 - [ ] Fase 2: Librerías.
 - [ ] Fase 3: Carga del dataset y exploración.
 - [ ] Fase 4: Prompts y preprocesamiento.

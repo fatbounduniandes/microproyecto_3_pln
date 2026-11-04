@@ -6,7 +6,7 @@ solo se hacen cuando él lo pide.
 ## Checklist
 
 - [x] **Fase 0 — Repo y base** (validada localmente; push pendiente)
-- [ ] **Fase 1 — Portada e introducción** (sección 1)
+- [x] **Fase 1 — Portada e introducción** (sección 1; validada localmente, push pendiente)
 - [ ] **Fase 2 — Librerías** (sección 2)
 - [ ] **Fase 3 — Carga del dataset y exploración** (sección 3)
 - [ ] **Fase 4 — Construcción de prompts y preprocesamiento** (sección 4)
@@ -39,6 +39,7 @@ solo se hacen cuando él lo pide.
   configuraciones (Qwen base, Qwen + LoRA, SmolLM2 base, SmolLM2 + LoRA).
 - Tabla de configuración y mención del dataset, la métrica y el entorno de ejecución.
 - **Lista cuando:** la sección 1 se lee completa y no tiene marcadores de pendiente.
+- **Estado:** escrita y validada localmente; pendiente de revisión y push.
 
 ### Fase 2 — Librerías
 - Instalación de `transformers`, `peft`, `datasets` y `accelerate` en Colab.
