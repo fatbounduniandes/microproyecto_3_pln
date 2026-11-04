@@ -312,6 +312,28 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
 - **Consecuencia:** `skills-lock.json` refleja el set nuevo. Las skills genéricas nunca se usan
   para cambiar los hiperparámetros obligatorios ni para sustituir la evaluación del curso.
 
+### D-027 · 2026-11-03 · Estructura del notebook heredada del MP2
+- **Decisión:** cada sección sigue el molde del `2_microproyecto`: un markdown que explica, y luego
+  una celda de código por paso, cada una anunciada por un markdown de una frase. La portada repite
+  el esquema del MP2 (título, autoría, `---`, resumen con la tabla de configuraciones, `### Datos`,
+  `### Evaluación`, `### Entorno` y cierre de reproducibilidad).
+- **Motivo:** el MP2 ya fue entregado y calificado con esa estructura; mantenerla hace el MP3
+  reconocible, legible y consistente, y evita inventar un formato nuevo a mitad de curso.
+- **Descartado:** portada con encabezados propios por bloque (más secciones y más ruido); secciones
+  con una sola celda gigante (peor para `Run All` y para explicar cada paso).
+- **Consecuencia:** las once secciones del PDF se ven iguales entre sí; cualquier sección nueva se
+  escribe copiando ese molde.
+
+### D-028 · 2026-11-03 · Las longitudes en tokens se miden en la sección 4
+- **Decisión:** la sección 3 explora el dataset en caracteres y palabras; el conteo en tokens con
+  cada tokenizador se hace en la sección 4, cuando ya se cargaron los dos tokenizadores.
+- **Motivo:** las longitudes en tokens dependen del tokenizador y son dos; cargar tokenizadores en
+  la sección 3 adelanta trabajo que la sección 4 necesita y duplica descargas si cambia el modelo.
+- **Descartado:** medir tokens con el tokenizador de Qwen en la sección 3 (mezcla datos de un
+  modelo con una exploración que debería ser neutral).
+- **Consecuencia:** la sección 3 solo imprime tamaños del dataset y estadísticas de texto; el
+  máximo de caracteres observado en `train` es 908, holgado frente a `max_len=512`.
+
 ---
 
 ## 4. Reglas duras del proyecto (no negociables)
@@ -420,9 +442,9 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
 - [x] Fase 0: `AGENTS.md`, `FASES.md`, `README.md`, `GUIA_MICROPROYECTO_3.md`,
       `build_notebook.py`, `requirements-colab.txt` y esqueleto de las 11 secciones.
 - [x] `build_notebook.py --check` en OK.
-- [x] Fase 1: Portada e introducción (escrita y validada localmente; push pendiente).
-- [ ] Fase 2: Librerías.
-- [ ] Fase 3: Carga del dataset y exploración.
+- [x] Fase 1: Portada e introducción (alineada al estilo del MP2).
+- [x] Fase 2: Librerías (escrita; GPU, AMP y Drive se validan en Colab).
+- [x] Fase 3: Carga del dataset y exploración (escrita; se valida en Colab).
 - [ ] Fase 4: Prompts y preprocesamiento.
 - [ ] Fase 5: Particiones.
 - [ ] Fase 6: Evaluación pass@1.

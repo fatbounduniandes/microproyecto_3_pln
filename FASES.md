@@ -6,9 +6,9 @@ solo se hacen cuando él lo pide.
 ## Checklist
 
 - [x] **Fase 0 — Repo y base** (validada localmente; push pendiente)
-- [x] **Fase 1 — Portada e introducción** (sección 1; validada localmente, push pendiente)
-- [ ] **Fase 2 — Librerías** (sección 2)
-- [ ] **Fase 3 — Carga del dataset y exploración** (sección 3)
+- [x] **Fase 1 — Portada e introducción** (sección 1, alineada al estilo del MP2)
+- [x] **Fase 2 — Librerías** (sección 2 escrita; validación pendiente en Colab)
+- [x] **Fase 3 — Carga del dataset y exploración** (sección 3 escrita; validación pendiente en Colab)
 - [ ] **Fase 4 — Construcción de prompts y preprocesamiento** (sección 4)
 - [ ] **Fase 5 — Particiones (train / validation / test)** (sección 5)
 - [ ] **Fase 6 — Implementación de la evaluación pass@1** (sección 6)
@@ -38,19 +38,23 @@ solo se hacen cuando él lo pide.
 - Nombre del estudiante o integrantes, resumen del proyecto y descripción de las cuatro
   configuraciones (Qwen base, Qwen + LoRA, SmolLM2 base, SmolLM2 + LoRA).
 - Tabla de configuración y mención del dataset, la métrica y el entorno de ejecución.
+- Misma estructura que el MP2: autoría, `---`, resumen con la tabla, `### Datos`,
+  `### Evaluación`, `### Entorno` y cierre de reproducibilidad.
 - **Lista cuando:** la sección 1 se lee completa y no tiene marcadores de pendiente.
 - **Estado:** escrita y validada localmente; pendiente de revisión y push.
 
 ### Fase 2 — Librerías
 - Instalación de `transformers`, `peft`, `datasets` y `accelerate` en Colab.
 - Imports, versiones, GPU, precisión (bf16/fp16), semilla, `DRIVE_DIR` y liberación de VRAM.
-- **Lista cuando:** en Colab se ve la GPU, el tipo de AMP y `Configuración lista`.
+- Revisiones fijas de MBPP, Qwen2.5-1.5B y SmolLM2-1.7B junto a las constantes.
+- **Lista cuando:** en Colab se ve la GPU, el tipo de AMP y la semilla fijada.
 
 ### Fase 3 — Carga del dataset y exploración
-- Carga de `google-research-datasets/mbpp` configuración `full`.
+- Carga de `google-research-datasets/mbpp` configuración `full` con revisión fija.
 - Descripción de los splits `train` (374), `validation` (90), `test` (500) y `prompt` (10).
-- Ejemplos reales de `text`, `code`, `test_list` y `test_setup_code`; longitudes de prompt,
-  código y tokens con el tokenizer de Qwen.
+- Ejemplos reales de `text`, `code`, `test_list` y `test_setup_code`.
+- Longitudes en caracteres y palabras; el conteo en tokens se hace en la sección 4, cuando ya
+  está cargado el tokenizador de cada modelo (D-027).
 - **Lista cuando:** se imprimen los tamaños y ejemplos reales, y Jean aprueba el cierre.
 
 ### Fase 4 — Construcción de prompts y preprocesamiento
