@@ -667,24 +667,10 @@ print("Primer caso de prueba:", ejemplo_validacion["test_list"][0])
 # %% [markdown]
 # ### Lo que nos deja la exploración
 #
-# **1. Ficha del corpus.** MBPP trae 974 problemas repartidos en cuatro splits: 374 en `train`, 90
-# en `validation`, 500 en `test` y 10 en `prompt`. Para el proyecto usamos los tres primeros:
-# `train` para el finetuning, `validation` para vigilar el entrenamiento y elegir la época, y
-# `test` una sola vez al final. El split `prompt` no se usa ni para entrenar ni para evaluar.
 #
-# **2. Separación y fuga de datos.** Los `task_id` de `train` van del 601 al 974, los de
-# `validation` del 511 al 600 y los de `test` del 11 al 510. No hay un solo identificador repetido
-# entre particiones y tampoco hay enunciados ni soluciones duplicadas, ni exactas ni normalizadas
-# (se compararon los 374 de `train` y los 90 de `validation` con hash MD5, en minúsculas y con los
-# espacios colapsados). Esto importa porque una fuga entre `train` y `test` inflaría el pass@1 sin
-# que el modelo sea mejor: estaría resolviendo problemas que ya vio. La separación se sostiene
-# también a nivel de contenido, no solo de identificadores.
-#
-# **3. ¿Se parecen `train` y `validation`?** El enunciado promedia 78.4 caracteres en `train` y
+# **3.  `train` y `validation` ** El enunciado promedia 78.4 caracteres en `train` y
 # 77.9 en `validation`, con p95 de 113 y 119. La solución promedia 178.4 y 182.4 caracteres, con
-# p95 de 412 y 447. La prueba de Kolmogorov-Smirnov no encuentra diferencias significativas:
-# estadístico 0.122 con p-valor 0.21 para el enunciado, y 0.087 con p-valor 0.63 para la solución.
-# Con 90 ejemplos la prueba tiene poca potencia, así que la lectura correcta es que no hay
+# p95 de 412 y 447. Con 90 ejemplos la prueba tiene poca potencia, así que la lectura correcta es que no hay
 # evidencia suficiente para distinguir los splits, no que sean idénticos. Para lo que necesitamos
 # alcanza: si el modelo mejora en `validation`, es razonable esperar una mejora parecida en `test`.
 #
