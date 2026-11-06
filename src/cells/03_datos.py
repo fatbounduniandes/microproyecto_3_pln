@@ -3,7 +3,8 @@
 #
 # Cargamos MBPP desde Hugging Face con la revisión fija de la sección anterior y revisamos qué
 # trae cada problema, cuánto miden los enunciados y las soluciones y cuántos `assert` usa cada uno.
-# Con eso decidimos cómo armar el prompt y cuánto contexto necesitamos.
+# El análisis se hace sobre `train` y `validation`; el split `test` solo se cuenta y se usa para
+# comprobar que no haya problemas repetidos, porque queda reservado para la evaluación final.
 
 # %% [markdown]
 # Cargamos el dataset y revisamos los splits y las columnas que trae.
@@ -116,8 +117,8 @@ print("Repetidos entre train y test:", repetidos_train_test)
 print("Repetidos entre validation y test:", repetidos_validation_test)
 
 # %% [markdown]
-# Comparamos los tres splits con las mismas medidas. Si `train`, `validation` y `test` se parecen en
-# tamaño de enunciado y de solución, los resultados de un split dicen algo sobre los otros.
+# Medimos los enunciados y las soluciones de `train` y `validation` en caracteres. Si los dos splits
+# se parecen, lo que aprendamos mirando `train` también aplica a `validation`.
 
 # %%
 def promedio(valores):
@@ -130,70 +131,127 @@ def percentil(valores, fraccion):
     return ordenados[posicion]
 
 
+largos_texto_train = []
+largos_codigo_train = []
+palabras_train = []
+for ejemplo in dataset["train"]:
+    largos_texto_train.append(len(ejemplo["text"]))
+    largos_codigo_train.append(len(ejemplo["code"]))
+    palabras_train.append(len(ejemplo["text"].split()))
+
+largos_texto_validation = []
+largos_codigo_validation = []
+for ejemplo in dataset["validation"]:
+    largos_texto_validation.append(len(ejemplo["text"]))
+    largos_codigo_validation.append(len(ejemplo["code"]))
+
 print(f"{'split':<12}{'n':>5}{'texto_prom':>12}{'texto_p95':>11}{'codigo_prom':>13}{'codigo_p95':>12}")
 
-for nombre in ["train", "validation", "test"]:
-    largos_texto_split = []
-    largos_codigo_split = []
-    for ejemplo in dataset[nombre]:
-        largos_texto_split.append(len(ejemplo["text"]))
-        largos_codigo_split.append(len(ejemplo["code"]))
-    texto_promedio = round(promedio(largos_texto_split), 1)
-    texto_p95 = percentil(largos_texto_split, 0.95)
-    codigo_promedio = round(promedio(largos_codigo_split), 1)
-    codigo_p95 = percentil(largos_codigo_split, 0.95)
-    print(f"{nombre:<12}{len(dataset[nombre]):>5}{texto_promedio:>12}{texto_p95:>11}{codigo_promedio:>13}{codigo_p95:>12}")
+for nombre in ["train", "validation"]:
+    if nombre == "train":
+        textos = largos_texto_train
+        codigos = largos_codigo_train
+    else:
+        textos = largos_texto_validation
+        codigos = largos_codigo_validation
+    texto_promedio = round(promedio(textos), 1)
+    texto_p95 = percentil(textos, 0.95)
+    codigo_promedio = round(promedio(codigos), 1)
+    codigo_p95 = percentil(codigos, 0.95)
+    print(f"{nombre:<12}{len(textos):>5}{texto_promedio:>12}{texto_p95:>11}{codigo_promedio:>13}{codigo_p95:>12}")
 
 # %% [markdown]
-# Miramos con más detalle los largos de `train`. Todavía no usamos un tokenizador porque cada modelo
-# tiene el suyo y eso lo vemos en la sección siguiente; aquí solo queremos una idea del tamaño de
-# los textos.
+# Miramos con más detalle los largos de `train`, que es el split con el que se entrena. Todavía no
+# usamos un tokenizador porque cada modelo tiene el suyo y eso lo vemos en la sección siguiente.
 
 # %%
-largos_texto = []
-largos_codigo = []
-palabras_texto = []
-
-for ejemplo in dataset["train"]:
-    largos_texto.append(len(ejemplo["text"]))
-    largos_codigo.append(len(ejemplo["code"]))
-    palabras_texto.append(len(ejemplo["text"].split()))
-
-
-def resumen_largos(nombre, valores):
-    print(nombre)
-    print("  mínimo:", min(valores))
-    print("  promedio:", round(promedio(valores), 1))
-    print("  mediana:", percentil(valores, 0.50))
-    print("  p95:", percentil(valores, 0.95))
-    print("  máximo:", max(valores))
-
-
-resumen_largos("Enunciado en caracteres", largos_texto)
+print("Enunciado en caracteres")
+print("  mínimo:", min(largos_texto_train))
+print("  promedio:", round(promedio(largos_texto_train), 1))
+print("  mediana:", percentil(largos_texto_train, 0.50))
+print("  p95:", percentil(largos_texto_train, 0.95))
+print("  máximo:", max(largos_texto_train))
 print()
-resumen_largos("Enunciado en palabras", palabras_texto)
+print("Enunciado en palabras")
+print("  mínimo:", min(palabras_train))
+print("  promedio:", round(promedio(palabras_train), 1))
+print("  mediana:", percentil(palabras_train, 0.50))
+print("  p95:", percentil(palabras_train, 0.95))
+print("  máximo:", max(palabras_train))
 print()
-resumen_largos("Solución en caracteres", largos_codigo)
+print("Solución en caracteres")
+print("  mínimo:", min(largos_codigo_train))
+print("  promedio:", round(promedio(largos_codigo_train), 1))
+print("  mediana:", percentil(largos_codigo_train, 0.50))
+print("  p95:", percentil(largos_codigo_train, 0.95))
+print("  máximo:", max(largos_codigo_train))
 
 # %% [markdown]
-# Dibujamos esas longitudes para ver si hay valores extremos que nos obliguen a subir el contexto.
+# Comparamos los dos splits con diagramas de caja. La caja muestra la mediana y el rango donde está
+# la mitad central de los datos, y los puntos sueltos son problemas atípicos.
 
 # %%
-plt.figure(figsize=(9, 3))
+plt.figure(figsize=(10, 3))
 
 plt.subplot(1, 2, 1)
-plt.hist(largos_texto, bins=20)
-plt.title("Enunciados en train")
-plt.xlabel("Caracteres")
-plt.ylabel("Problemas")
+plt.boxplot([largos_texto_train, largos_texto_validation])
+plt.xticks([1, 2], ["train", "validation"])
+plt.title("Enunciados")
+plt.ylabel("Caracteres")
 
 plt.subplot(1, 2, 2)
-plt.hist(largos_codigo, bins=20)
-plt.title("Soluciones en train")
-plt.xlabel("Caracteres")
+plt.boxplot([largos_codigo_train, largos_codigo_validation])
+plt.xticks([1, 2], ["train", "validation"])
+plt.title("Soluciones")
+plt.ylabel("Caracteres")
 
 plt.tight_layout()
 plt.show()
+
+# %% [markdown]
+# Dibujamos la curva acumulada de las longitudes: para cada valor del eje x muestra qué porcentaje
+# de los problemas mide eso o menos. Sirve para decidir cuánto contexto necesitamos.
+
+# %%
+def acumulada(valores):
+    ordenados = sorted(valores)
+    x = ordenados
+    y = []
+    for i in range(len(ordenados)):
+        y.append((i + 1) / len(ordenados))
+    return x, y
+
+
+x_train, y_train = acumulada(largos_texto_train)
+x_val, y_val = acumulada(largos_texto_validation)
+
+plt.figure(figsize=(10, 3))
+
+plt.subplot(1, 2, 1)
+plt.plot(x_train, y_train, label="train")
+plt.plot(x_val, y_val, linestyle="--", label="validation")
+plt.axvline(percentil(largos_texto_train, 0.95), linestyle=":", color="gray")
+plt.title("Enunciados")
+plt.xlabel("Caracteres")
+plt.ylabel("Proporción acumulada")
+plt.legend()
+
+x_train, y_train = acumulada(largos_codigo_train)
+x_val, y_val = acumulada(largos_codigo_validation)
+
+plt.subplot(1, 2, 2)
+plt.plot(x_train, y_train, label="train")
+plt.plot(x_val, y_val, linestyle="--", label="validation")
+plt.axvline(percentil(largos_codigo_train, 0.95), linestyle=":", color="gray")
+plt.title("Soluciones")
+plt.xlabel("Caracteres")
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+print("p95 del enunciado en train:", percentil(largos_texto_train, 0.95), "caracteres")
+print("p95 de la solución en train:", percentil(largos_codigo_train, 0.95), "caracteres")
 
 # %% [markdown]
 # Revisamos qué tan completas son las soluciones de referencia. Si varias traen imports, clases o
@@ -201,47 +259,94 @@ plt.show()
 # sola función.
 
 # %%
-con_import = 0
-con_clase = 0
-con_varias_funciones = 0
-con_una_funcion = 0
-sin_parsear = 0
+def contar_estructura(particion):
+    conteos = {"una función": 0, "varias funciones": 0, "con imports": 0, "con clases": 0, "sin leer": 0}
+    for ejemplo in particion:
+        try:
+            arbol = ast.parse(ejemplo["code"])
+        except SyntaxError:
+            conteos["sin leer"] = conteos["sin leer"] + 1
+            continue
 
-for ejemplo in dataset["train"]:
-    try:
-        arbol = ast.parse(ejemplo["code"])
-    except SyntaxError:
-        sin_parsear = sin_parsear + 1
-        continue
+        imports = 0
+        clases = 0
+        funciones = 0
+        for nodo in arbol.body:
+            if isinstance(nodo, ast.Import):
+                imports = imports + 1
+            if isinstance(nodo, ast.ImportFrom):
+                imports = imports + 1
+            if isinstance(nodo, ast.ClassDef):
+                clases = clases + 1
+            if isinstance(nodo, ast.FunctionDef):
+                funciones = funciones + 1
 
-    imports = 0
-    clases = 0
-    funciones = 0
-    for nodo in arbol.body:
-        if isinstance(nodo, ast.Import):
-            imports = imports + 1
-        if isinstance(nodo, ast.ImportFrom):
-            imports = imports + 1
-        if isinstance(nodo, ast.ClassDef):
-            clases = clases + 1
-        if isinstance(nodo, ast.FunctionDef):
-            funciones = funciones + 1
+        if funciones == 1:
+            conteos["una función"] = conteos["una función"] + 1
+        if funciones > 1:
+            conteos["varias funciones"] = conteos["varias funciones"] + 1
+        if imports > 0:
+            conteos["con imports"] = conteos["con imports"] + 1
+        if clases > 0:
+            conteos["con clases"] = conteos["con clases"] + 1
+    return conteos
 
-    if imports > 0:
-        con_import = con_import + 1
-    if clases > 0:
-        con_clase = con_clase + 1
-    if funciones > 1:
-        con_varias_funciones = con_varias_funciones + 1
-    if funciones == 1:
-        con_una_funcion = con_una_funcion + 1
 
-print("Problemas de train:", len(dataset["train"]))
-print("Soluciones que no se pudieron leer:", sin_parsear)
-print("Con imports:", con_import)
-print("Con clases:", con_clase)
-print("Con más de una función:", con_varias_funciones)
-print("Con una sola función:", con_una_funcion)
+conteos_train = contar_estructura(dataset["train"])
+conteos_validation = contar_estructura(dataset["validation"])
+
+print("train:", conteos_train)
+print("validation:", conteos_validation)
+
+categorias = ["una función", "varias funciones", "con imports", "con clases"]
+
+porcentaje_train = []
+porcentaje_validation = []
+for categoria in categorias:
+    porcentaje_train.append(100 * conteos_train[categoria] / len(dataset["train"]))
+    porcentaje_validation.append(100 * conteos_validation[categoria] / len(dataset["validation"]))
+
+plt.figure(figsize=(8, 3.5))
+plt.barh(categorias, porcentaje_train, label="train")
+plt.barh(categorias, porcentaje_validation, label="validation", alpha=0.6)
+plt.xlabel("Porcentaje de problemas")
+plt.title("Estructura del código de referencia")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# %% [markdown]
+# Buscamos los casos extremos de `train`: el enunciado más largo, la solución más larga y el único
+# problema que trae `test_setup_code`. Los extremos son los que pueden quedar truncados o romper la
+# ejecución de los `assert`.
+
+# %%
+indice_texto = largos_texto_train.index(max(largos_texto_train))
+indice_codigo = largos_codigo_train.index(max(largos_codigo_train))
+
+print("Enunciado más largo de train")
+print("  task_id:", dataset["train"][indice_texto]["task_id"])
+print("  caracteres:", largos_texto_train[indice_texto])
+print(" ", dataset["train"][indice_texto]["text"])
+print()
+print("Solución más larga de train")
+print("  task_id:", dataset["train"][indice_codigo]["task_id"])
+print("  caracteres:", largos_codigo_train[indice_codigo])
+print("  líneas:", len(dataset["train"][indice_codigo]["code"].splitlines()))
+
+indice_setup = None
+for i in range(len(dataset["train"])):
+    if dataset["train"][i]["test_setup_code"].strip() != "":
+        indice_setup = i
+        break
+
+print()
+if indice_setup is None:
+    print("Ningún problema de train trae test_setup_code")
+else:
+    print("Problema con test_setup_code")
+    print("  task_id:", dataset["train"][indice_setup]["task_id"])
+    print(dataset["train"][indice_setup]["test_setup_code"])
 
 # %% [markdown]
 # Revisamos la columna `challenge_test_list`, que trae pruebas adicionales, y miramos un ejemplo del
@@ -265,21 +370,17 @@ print()
 print(ejemplo_prompt["code"])
 
 # %% [markdown]
-# Mostramos un problema de `validation` y otro de `test` para confirmar que los tres splits tienen
-# el mismo formato. Solo miramos la forma; estas particiones no se tocan hasta evaluar.
+# Mostramos un problema de `validation` para confirmar que tiene el mismo formato que `train`.
 
 # %%
-for nombre in ["validation", "test"]:
-    ejemplo = dataset[nombre][0]
-    print("=" * 70)
-    print("split:", nombre, "| task_id:", ejemplo["task_id"])
-    print()
-    print(ejemplo["text"])
-    print()
-    print(ejemplo["code"])
-    print()
-    print("Primer caso de prueba:", ejemplo["test_list"][0])
-    print()
+ejemplo_validacion = dataset["validation"][0]
+print("task_id:", ejemplo_validacion["task_id"])
+print()
+print(ejemplo_validacion["text"])
+print()
+print(ejemplo_validacion["code"])
+print()
+print("Primer caso de prueba:", ejemplo_validacion["test_list"][0])
 
 # %% [markdown]
 # Revisamos cuántos `assert` trae cada problema y en cuántos aparece `test_setup_code`, porque eso
@@ -287,45 +388,53 @@ for nombre in ["validation", "test"]:
 # generada y antes de los `assert`.
 
 # %%
-conteo_asserts = {}
-con_setup = 0
+for nombre in ["train", "validation"]:
+    conteo_asserts = {}
+    con_setup = 0
+    for ejemplo in dataset[nombre]:
+        cuantos = len(ejemplo["test_list"])
+        if cuantos in conteo_asserts:
+            conteo_asserts[cuantos] = conteo_asserts[cuantos] + 1
+        else:
+            conteo_asserts[cuantos] = 1
+        if ejemplo["test_setup_code"].strip() != "":
+            con_setup = con_setup + 1
 
-for ejemplo in dataset["train"]:
-    cuantos = len(ejemplo["test_list"])
-    if cuantos in conteo_asserts:
-        conteo_asserts[cuantos] = conteo_asserts[cuantos] + 1
-    else:
-        conteo_asserts[cuantos] = 1
-    if ejemplo["test_setup_code"].strip() != "":
-        con_setup = con_setup + 1
-
-print("Assert por problema:")
-for cuantos in sorted(conteo_asserts):
-    if cuantos == 1:
-        etiqueta = "assert"
-    else:
-        etiqueta = "asserts"
-    if conteo_asserts[cuantos] == 1:
-        print(" ", cuantos, etiqueta, "->", conteo_asserts[cuantos], "problema")
-    else:
-        print(" ", cuantos, etiqueta, "->", conteo_asserts[cuantos], "problemas")
-
-print()
-print("Problemas con test_setup_code:", con_setup, "de", len(dataset["train"]))
+    print(nombre)
+    for cuantos in sorted(conteo_asserts):
+        if cuantos == 1:
+            etiqueta = "assert"
+        else:
+            etiqueta = "asserts"
+        if conteo_asserts[cuantos] == 1:
+            print(" ", cuantos, etiqueta, "->", conteo_asserts[cuantos], "problema")
+        else:
+            print(" ", cuantos, etiqueta, "->", conteo_asserts[cuantos], "problemas")
+    print("  problemas con test_setup_code:", con_setup)
+    print()
 
 # %% [markdown]
 # ### Lo que nos deja la exploración
 #
-# Los tres splits vienen bien separados: `test` ocupa los `task_id` más bajos y `train` los más
-# altos, sin problemas repetidos, así que la evaluación no se contamina con lo que el modelo ya vio.
-# Los splits además se parecen en tamaño de enunciado y de solución, lo que hace comparable el
-# pass@1 de `train` con el de `test`.
+# `train` va del `task_id` 601 al 974 y `validation` del 511 al 600, sin ningún identificador
+# repetido entre particiones. Eso descarta que el modelo haya visto durante el entrenamiento algún
+# problema de los que se usan para monitorear, y deja `test` (del 11 al 510) limpio para el pass@1
+# final.
 #
-# Los enunciados son cortos y las soluciones también, así que un límite de 512 tokens alcanza de
-# sobra. Casi todas las soluciones son una sola función, pero varias traen imports y alguna trae
-# clases o funciones auxiliares: por eso el target es el código completo y no solo el cuerpo.
+# Los dos splits se parecen: el enunciado promedia 78 caracteres (unas 14 palabras) y la solución
+# 178, con un p95 de 113 y 412 caracteres. El 95 % de las soluciones cabe en menos de 412
+# caracteres, así que un límite de 512 tokens sobra, y la solución más larga ronda las 900 letras.
+#
+# Casi todas las soluciones son una sola función, pero 87 de las 374 traen imports y unas pocas
+# agregan clases o funciones auxiliares. Por eso el target es el código completo y no solo el
+# cuerpo: si entrenáramos solo con el cuerpo, el modelo nunca aprendería a escribir esas piezas.
 #
 # Los problemas de MBPP no dicen cómo se llama la función, pero los `assert` la llaman por su
 # nombre. Por eso el prompt lleva el enunciado y el nombre con la firma de la función. La solución
 # de referencia y los casos de prueba se quedan fuera del prompt, porque si aparecen el modelo
 # podría copiarse o memorizar los `assert` en vez de resolver el problema.
+#
+# Además, los 374 problemas de `train` traen exactamente 3 `assert` y solo uno usa
+# `test_setup_code`, así que la verificación es uniforme y el caso especial es raro pero hay que
+# manejarlo: ese código de preparación se ejecuta después de la solución generada y antes de los
+# `assert`.

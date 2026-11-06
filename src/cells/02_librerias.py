@@ -54,9 +54,10 @@ print("peft:", peft.__version__)
 print("numpy:", np.__version__)
 
 # %% [markdown]
-# Detectamos la GPU y elegimos la precisión mixta: bf16 en L4 y A100, fp16 con `GradScaler` en T4.
-# En la misma celda dejamos las constantes del proyecto, incluidos los nombres y las revisiones
-# fijas del dataset y de los dos modelos.
+# Detectamos la GPU y elegimos la precisión mixta mirando el compute capability: bf16 solo en GPUs
+# Ampere o superiores (L4, A100), fp16 con `GradScaler` en T4 y en tarjetas más viejas. En la misma
+# celda dejamos las constantes del proyecto, incluidos los nombres y las revisiones fijas del
+# dataset y de los dos modelos.
 
 # %%
 SEED = 42
@@ -73,9 +74,15 @@ SMOL_ID = "HuggingFaceTB/SmolLM2-1.7B"
 SMOL_REVISION = "effd688a12921b4cc83e3312b6feb579f70f9c71"
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-USE_BF16 = DEVICE == "cuda" and torch.cuda.is_bf16_supported()
 
-if USE_BF16:
+if DEVICE == "cuda":
+    props = torch.cuda.get_device_properties(0)
+    SOPORTA_BF16 = props.major >= 8
+else:
+    props = None
+    SOPORTA_BF16 = False
+
+if SOPORTA_BF16:
     AMP_DTYPE = torch.bfloat16
     NOMBRE_AMP = "bfloat16"
     USE_SCALER = False
@@ -85,9 +92,9 @@ else:
     USE_SCALER = True
 
 if DEVICE == "cuda":
-    props = torch.cuda.get_device_properties(0)
     print("GPU:", props.name)
     print("VRAM:", round(props.total_memory / 1024 ** 3, 1), "GB")
+    print("Compute capability:", props.major, ".", props.minor)
 else:
     print("No se detectó GPU: el entrenamiento en CPU va a ser muy lento")
 
