@@ -401,6 +401,39 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
 - **Consecuencia:** se elimina la celda de código final y el import de `IPython.display`. Si algún
   día cambia la revisión del dataset, hay que actualizar las cifras a mano.
 
+### D-034 · 2026-11-06 · Formato del prompt: `### Problem` / `### Signature` / `### Solution`
+- **Decisión:** el prompt es `### Problem\n{enunciado}\n\n### Signature\n{def ...:}\n\n### Solution\n`.
+  La firma va en un bloque de código aparte y el target es el `code` de referencia completo
+  (`rstrip()`) más el EOS. No se incluyen helpers en el prompt, ni `assert`, ni `test_setup_code`.
+- **Motivo:** el PDF deja el formato a nuestra elección y solo exige que el prompt describa el
+  problema y que el mismo formato se use en entrenamiento y evaluación. La firma es necesaria
+  porque los `assert` llaman a la función por su nombre y solo 13 de los 374 enunciados de `train`
+  lo mencionan. El bloque separado permite que el modelo escriba la solución completa desde cero:
+  103 soluciones empiezan con imports, clases o helpers, y en 2 casos (717 y 940) la función
+  objetivo no es el último `def`.
+- **Descartado:** firma en prosa (el modelo tiene que interpretarla y reescribirla); prompt que
+  termina en `def ...:` (no representa las 103 soluciones con preludio); prompt sin firma (el
+  nombre se adivina y el pass@1 cae por una razón ajena a la programación).
+- **Consecuencia:** el mismo `construir_prompt` se usa en entrenamiento, validación y `test`. En la
+  sección 7 se verifica que un modelo base no continúe el bloque `### Signature`; si lo hace, se
+  cambia el encabezado antes de entrenar.
+
+### D-035 · 2026-11-06 · Tokenización, EOS y máscara de labels
+- **Decisión:** tokenizar con `add_special_tokens=False`; agregar el EOS a mano y supervisarlo; no
+  usar BOS; poner `pad_token = eos_token` cuando falte (SmolLM2); `padding_side = "left"` para la
+  generación; en entrenamiento, lotes con relleno dinámico a la derecha armados en `preparar_lote`;
+  `labels` en `-100` para el prompt y para el relleno, con los ids reales en la solución y el EOS;
+  `MAX_LEN = 512` sin truncamiento, con error si un lote lo supera.
+- **Motivo:** ninguno de los dos tokenizadores agrega BOS ni EOS, y el EOS es la señal de parada que
+  el modelo debe aprender a emitir. El prompt tokenizado es prefijo exacto del texto completo en
+  464/464 con ambos tokenizadores, así que la máscara por longitud es exacta. El total más largo
+  medido es 346 tokens, de modo que 512 no recorta nada.
+- **Descartado:** `padding="max_length"` (reserva 512 tokens por ejemplo y desperdicia memoria);
+  truncamiento (nunca se activa y podría cortar el target); padding a la izquierda en entrenamiento
+  (no aporta cuando la pérdida está enmascarada y complica la lectura de los `labels`).
+- **Consecuencia:** `tokenizar_ejemplo` es la referencia para auditar y `preparar_lote` es la única
+  vía para armar lotes de entrenamiento. La sección 5 aplica el pipeline a los tres splits.
+
 ---
 
 ## 4. Reglas duras del proyecto (no negociables)
@@ -513,7 +546,8 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
 - [x] Fase 2: Librerías (corrida en Colab T4; bf16 por emulación corregido en D-031).
 - [x] Fase 3: Carga del dataset y exploración (corrida en Colab; análisis ampliado con 6 figuras,
       vocabulario, calidad y KS; conclusiones en markdown, D-030 y D-033; pendiente re-ejecutar).
-- [ ] Fase 4: Prompts y preprocesamiento.
+- [ ] Fase 4: Prompts y preprocesamiento (sección 4 escrita con formato `### Signature`, target
+      completo + EOS y máscara `-100`; D-034 y D-035; pendiente validar en Colab).
 - [ ] Fase 5: Particiones.
 - [ ] Fase 6: Evaluación pass@1.
 - [ ] Fase 7: Evaluación base.

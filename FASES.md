@@ -80,6 +80,9 @@ solo se hacen cuando él lo pide.
 - Máscara de `labels` con `-100` para todos los tokens del prompt; verificación de longitudes.
 - **Lista cuando:** un ejemplo imprime prompt, target, labels y el número de tokens enmascarados
   coincide con la longitud real del prompt.
+- **Estado:** escrita (D-034 y D-035). Validada en local con los 464 ejemplos de `train` y
+  `validation` y los tokenizadores de las revisiones fijas: 0 diferencias de prefijo, 0 ejemplos
+  por encima de 512 y 0 fugas; pendiente de ejecutar en Colab.
 
 ### Fase 5 — Particiones (train / validation / test)
 - Asignación de roles: `train` para finetuning, `validation` para monitoreo e hiperparámetros,
