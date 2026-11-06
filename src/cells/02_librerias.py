@@ -12,12 +12,14 @@
 
 # %% [markdown]
 # Importamos lo necesario y comprobamos las versiones que quedaron cargadas. `ast` lo usamos para
-# leer el nombre y la firma de la función, `subprocess` para ejecutar el código generado y `re`
-# para extraer los bloques de código del texto que devuelve el modelo.
+# leer el nombre y la firma de la función, `hashlib` para buscar duplicados, `subprocess` para
+# ejecutar el código generado y `re` para extraer los bloques de código del texto que devuelve el
+# modelo. `pandas` y `scipy` son solo para las tablas y la comparación de distribuciones.
 
 # %%
 import ast
 import gc
+import hashlib
 import json
 import os
 import random
@@ -32,6 +34,7 @@ os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
 
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import torch
 from tqdm.auto import tqdm
 
@@ -40,7 +43,9 @@ import peft
 import transformers
 from datasets import load_dataset
 from google.colab import drive
+from IPython.display import Markdown, display
 from peft import LoraConfig, PeftModel, get_peft_model
+from scipy.stats import ks_2samp
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 warnings.filterwarnings("ignore")

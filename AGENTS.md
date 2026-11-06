@@ -374,6 +374,20 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
 - **Consecuencia:** la sección 2 imprime el compute capability junto a la GPU, y una T4 cae en
   fp16 + `GradScaler` sin tocar el resto del código. Reemplaza la detección descrita en D-002.
 
+### D-032 · 2026-11-05 · Análisis descriptivo y conclusiones calculadas en la sección 3
+- **Decisión:** la sección 3 incluye tabla descriptiva con pandas, análisis de vocabulario,
+  estructura del código con `ast`, construcciones usadas, calidad del texto (tabs, `print`,
+  `input`, duplicados) y prueba de Kolmogorov-Smirnov entre `train` y `validation`. Las
+  conclusiones se generan con `display(Markdown(...))` a partir de los valores calculados, en vez
+  de escribir cifras fijas en el texto.
+- **Motivo:** el MP2 mostró que la exploración se evalúa por lo que permite concluir, no por el
+  número de ejemplos impresos. Generar el texto desde las variables evita que las conclusiones se
+  desactualicen y obliga a que cada afirmación tenga un número detrás.
+- **Descartado:** conclusiones estáticas con cifras escritas a mano (se rompen al cambiar el
+  dataset); limitar la exploración a longitudes y conteos (no justifica el prompt ni el target).
+- **Consecuencia:** la sección 3 pasa a 18 celdas de código y 6 figuras, y suma `pandas` y
+  `scipy` a las dependencias. Todo el análisis sigue limitado a `train` y `validation` (D-030).
+
 ---
 
 ## 4. Reglas duras del proyecto (no negociables)
@@ -484,8 +498,8 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
 - [x] `build_notebook.py --check` en OK.
 - [x] Fase 1: Portada e introducción (alineada al estilo del MP2).
 - [x] Fase 2: Librerías (corrida en Colab T4; bf16 por emulación corregido en D-031).
-- [x] Fase 3: Carga del dataset y exploración (corrida en Colab; se amplió con tres figuras y
-      el análisis ya no toca `test`, D-030; pendiente re-ejecutar para ver las figuras).
+- [x] Fase 3: Carga del dataset y exploración (corrida en Colab; análisis ampliado con 6 figuras,
+      vocabulario, calidad, KS y conclusiones calculadas, D-030 y D-032; pendiente re-ejecutar).
 - [ ] Fase 4: Prompts y preprocesamiento.
 - [ ] Fase 5: Particiones.
 - [ ] Fase 6: Evaluación pass@1.

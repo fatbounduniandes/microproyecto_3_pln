@@ -56,15 +56,22 @@ solo se hacen cuando él lo pide.
 - Carga de `google-research-datasets/mbpp` configuración `full` con revisión fija.
 - Descripción de los splits `train` (374), `validation` (90), `test` (500) y `prompt` (10).
 - Ejemplos reales de `text`, `code`, `test_list` y `test_setup_code`.
-- Verificación de que ningún `task_id` se repite entre splits.
-- Análisis de longitudes y estructura del código **solo con `train` y `validation`**; de `test`
-  únicamente se cuentan los ejemplos y se revisan los identificadores (D-030).
-- Tres figuras: boxplots por split, curva acumulada y barras de estructura del código.
-- Revisión de `challenge_test_list`, del split `prompt` y de los casos extremos de `train`.
-- Longitudes en caracteres y palabras; el conteo en tokens se hace en la sección 4 (D-028).
-- **Lista cuando:** se imprimen los tamaños y ejemplos reales, salen las tres figuras y Jean
-  aprueba el cierre.
-- **Estado:** corrida en Colab hasta esta fase; faltan las figuras nuevas y el cierre con números.
+- Verificación de que ningún `task_id` se repite entre splits y de que no hay textos ni códigos
+  duplicados, exactos ni normalizados.
+- Tabla descriptiva con pandas (cuartiles, desviación y extremos) para `train` y `validation`.
+- Análisis de vocabulario: palabras distintas, más frecuentes y cuántos enunciados mencionan el
+  nombre de la función.
+- Análisis de estructura con `ast`: funciones por solución, imports, clases, recursión y ciclos.
+- Calidad del texto: tabs, `print(`, `input(`, soluciones de una línea y prueba de
+  Kolmogorov-Smirnov entre `train` y `validation`.
+- Análisis de los `assert`: cantidad por problema y tipo de valor esperado.
+- Seis figuras: boxplots, curva acumulada, palabras frecuentes, líneas por solución, estructura
+  y construcciones.
+- Conclusiones generadas desde los números calculados, con hallazgos, riesgos y limitaciones.
+- De `test` solo se cuentan los ejemplos y se revisan los identificadores (D-030).
+- **Lista cuando:** se imprimen los tamaños y ejemplos reales, salen las figuras y Jean aprueba
+  el cierre.
+- **Estado:** corrida en Colab hasta esta fase; pendiente re-ejecutar con el análisis ampliado.
 
 ### Fase 4 — Construcción de prompts y preprocesamiento
 - Formato de instrucción único: problema + nombre/firma de la función objetivo.
