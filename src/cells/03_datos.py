@@ -665,239 +665,89 @@ print()
 print("Primer caso de prueba:", ejemplo_validacion["test_list"][0])
 
 # %% [markdown]
-# Con todos los números anteriores armamos las conclusiones de la exploración. El texto se genera
-# con los valores calculados, así que siempre coincide con la ejecución.
-
-# %%
-n_train = len(dataset["train"])
-n_validation = len(dataset["validation"])
-n_test = len(dataset["test"])
-n_prompt = len(dataset["prompt"])
-n_total = n_train + n_validation + n_test + n_prompt
-
-porcentaje_nombres = round(100 * nombres_en_texto / n_train, 1)
-porcentaje_tabs = round(100 * con_tabs / n_train, 1)
-resto_enunciados = n_train - empieza_to - empieza_that - empieza_python
-
-mediana_codigo = percentil(largos_codigo_train, 0.50)
-ratio_codigo = round(max(largos_codigo_train) / mediana_codigo, 1)
-puntos_por_problema = round(100 / n_validation, 1)
-
-
-def frase_verbos(cantidad, singular, plural):
-    if cantidad == 1:
-        return str(cantidad) + " " + singular
-    return str(cantidad) + " " + plural
-
-
-trozos_top = []
-for palabra in top_palabras[:5]:
-    trozos_top.append(palabra + " (" + str(conteo_palabras[palabra]) + ")")
-lista_top = ", ".join(trozos_top)
-
-SINGULARES = {
-    "constantes": "constante",
-    "listas": "lista",
-    "tuplas": "tupla",
-    "diccionarios": "diccionario",
-    "conjuntos": "conjunto",
-    "valores negativos": "valor negativo",
-    "otros": "otro",
-}
-
-trozos_tipos = []
-for tipo in tipos_ordenados:
-    cantidad = tipos_valor[tipo]
-    if cantidad == 1:
-        trozos_tipos.append("1 " + SINGULARES[tipo])
-    else:
-        trozos_tipos.append(str(cantidad) + " " + tipo)
-detalle_tipos = ", ".join(trozos_tipos)
-
-frase_resto = ""
-if resto_enunciados > 0:
-    frase_resto = f" Los {resto_enunciados} restantes son variantes menores, como un título en mayúsculas."
-
-if ks_texto.pvalue < 0.05:
-    frase_ks_texto = "sí encuentra una diferencia"
-else:
-    frase_ks_texto = "no encuentra una diferencia"
-
-if ks_codigo.pvalue < 0.05:
-    frase_ks_codigo = "sí encuentra una diferencia"
-else:
-    frase_ks_codigo = "no encuentra una diferencia"
-
-if ks_texto.pvalue < 0.05 or ks_codigo.pvalue < 0.05:
-    frase_potencia = (
-        f"Cuando el p-valor es bajo, la diferencia puede ser real o venir de una muestra pequeña: "
-        f"con {n_validation} ejemplos la prueba tiene poca potencia y no conviene sobreinterpretar."
-    )
-else:
-    frase_potencia = (
-        f"Con {n_validation} ejemplos la prueba tiene poca potencia: no encontrar diferencias no "
-        f"prueba que los splits sean idénticos, solo que no hay evidencia suficiente para distinguirlos."
-    )
-
-if duplicados_texto_exactos == 0 and duplicados_codigo_exactos == 0 and duplicados_texto_normalizados == 0 and duplicados_codigo_normalizados == 0:
-    frase_duplicados = "tampoco hay enunciados ni soluciones duplicadas, ni exactas ni normalizadas"
-    frase_contenido = "La separación se sostiene también a nivel de contenido, no solo de identificadores."
-else:
-    frase_duplicados = "pero aparecen duplicados de contenido que hay que revisar antes de entrenar"
-    frase_contenido = "La separación por identificadores no basta: hay que revisar esos duplicados antes de entrenar."
-
-if MAX_NEW_TOKENS >= 512:
-    frase_limite = "deja margen de sobra y el peor caso se generaría completo"
-else:
-    frase_limite = "puede truncar las soluciones del extremo"
-
-if min_asserts == max_asserts:
-    frase_asserts = f"todos los problemas traen exactamente {min_asserts}"
-else:
-    frase_asserts = f"cada problema trae entre {min_asserts} y {max_asserts}"
-
-if con_tabs == 1:
-    frase_tabs = f"{con_tabs} solución ({porcentaje_tabs} %) usa tabs"
-else:
-    frase_tabs = f"{con_tabs} soluciones ({porcentaje_tabs} %) usan tabs"
-
-if una_linea == 0:
-    frase_linea = "ninguna cabe en una sola línea"
-else:
-    frase_linea = f"{una_linea} caben en una sola línea"
-
-if con_print == 0 and con_input == 0:
-    frase_salida = "no hay ninguna con `print(` ni con `input(`"
-else:
-    frase_salida = f"hay {con_print} con `print(` y {con_input} con `input(`"
-
-if con_setup_total == 1:
-    frase_setup = "el único problema con `test_setup_code`"
-else:
-    frase_setup = f"los {con_setup_total} problemas con `test_setup_code`"
-
-frase_una = frase_verbos(conteos_train["una función"], "es una sola función", "son una sola función")
-frase_varias = frase_verbos(conteos_train["varias funciones"], "tiene más de una", "tienen más de una")
-frase_imports = frase_verbos(conteos_train["con imports"], "trae imports", "traen imports")
-frase_clases = frase_verbos(conteos_train["con clases"], "declara clases", "declaran clases")
-frase_recursion = frase_verbos(con_recursion, "solución es recursiva", "soluciones son recursivas")
-frase_ciclos = (
-    frase_verbos(con_for, "usa", "usan") + " un ciclo `for`, "
-    + frase_verbos(con_while, "usa", "usan") + " un `while` y "
-    + frase_verbos(con_if, "usa", "usan") + " un `if`"
-)
-
-if ratio_codigo >= 2:
-    frase_ratio = f"es {ratio_codigo} veces la mediana"
-else:
-    frase_ratio = f"apenas supera la mediana ({ratio_codigo} veces)"
-
-partes = []
-
-partes.append(
-    f"### Lo que nos deja la exploración\n\n"
-    f"**1. Ficha del corpus.** MBPP trae {n_total} problemas repartidos en cuatro splits: "
-    f"{n_train} en `train`, {n_validation} en `validation`, {n_test} en `test` y {n_prompt} en "
-    f"`prompt`. Para el proyecto usamos los tres primeros: `train` para el finetuning, "
-    f"`validation` para vigilar el entrenamiento y elegir la época, y `test` una sola vez al "
-    f"final. El split `prompt` no se usa ni para entrenar ni para evaluar."
-)
-
-partes.append(
-    f"**2. Separación y fuga de datos.** Los `task_id` de `train` van del {min(ids_train)} al "
-    f"{max(ids_train)}, los de `validation` del {min(ids_validation)} al {max(ids_validation)} y "
-    f"los de `test` del {min(ids_test)} al {max(ids_test)}. No hay un solo identificador repetido "
-    f"entre particiones; {frase_duplicados}. Esto importa porque una fuga entre `train` y `test` "
-    f"inflaría el pass@1 sin que el modelo sea mejor: estaría resolviendo problemas que ya vio. "
-    f"{frase_contenido}"
-)
-
-partes.append(
-    f"**3. ¿Se parecen `train` y `validation`?** El enunciado promedia "
-    f"{round(promedio(largos_texto_train), 1)} caracteres en `train` y "
-    f"{round(promedio(largos_texto_validation), 1)} en `validation`, con p95 de "
-    f"{percentil(largos_texto_train, 0.95)} y {percentil(largos_texto_validation, 0.95)}. La "
-    f"solución promedia {round(promedio(largos_codigo_train), 1)} y "
-    f"{round(promedio(largos_codigo_validation), 1)} caracteres, con p95 de "
-    f"{percentil(largos_codigo_train, 0.95)} y {percentil(largos_codigo_validation, 0.95)}. La "
-    f"prueba de Kolmogorov-Smirnov {frase_ks_texto} entre las distribuciones del enunciado "
-    f"(estadístico {round(ks_texto.statistic, 3)}, p-valor {round(ks_texto.pvalue, 3)}) y "
-    f"{frase_ks_codigo} entre las de la solución (estadístico {round(ks_codigo.statistic, 3)}, "
-    f"p-valor {round(ks_codigo.pvalue, 3)}). {frase_potencia} Para lo que necesitamos alcanza: si "
-    f"el modelo mejora en `validation`, es razonable esperar una mejora parecida en `test`."
-)
-
-partes.append(
-    f"**4. Los enunciados son plantillas.** De los {n_train} problemas, {empieza_to} empiezan "
-    f"literalmente con “write a function to”, {empieza_that} con “write a function that” y "
-    f"{empieza_python} con “write a python function”.{frase_resto} El vocabulario es pequeño: "
-    f"{len(todas_las_palabras)} palabras distintas en total y {len(conteo_palabras)} sin contar "
-    f"las vacías y las de la plantilla. Las palabras con contenido más frecuentes son {lista_top}. "
-    f"Esa uniformidad tiene dos consecuencias. Primero, el modelo no necesita interpretar "
-    f"instrucciones muy diversas: aprende un molde y lo repite, así que el pass@1 dependerá sobre "
-    f"todo de resolver el problema y no de entender el enunciado. Segundo, el nombre de la función "
-    f"objetivo solo aparece en {nombres_en_texto} de los {n_train} enunciados "
-    f"({porcentaje_nombres} %), aunque los `assert` la llaman por su nombre; sin la firma en el "
-    f"prompt, el modelo tendría que adivinarlo y el pass@1 caería por una razón que no es de "
-    f"programación. Por eso D-018 incluye el nombre y la firma, y solo eso, en el prompt."
-)
-
-partes.append(
-    f"**5. Las soluciones son cortas.** La mediana es de {mediana_codigo} caracteres y "
-    f"{percentil(lineas_train, 0.50)} líneas; el p95, de {percentil(largos_codigo_train, 0.95)} "
-    f"caracteres y {percentil(lineas_train, 0.95)} líneas; la más larga llega a "
-    f"{max(largos_codigo_train)} caracteres y {max(lineas_train)} líneas. Con estos tamaños, un "
-    f"límite de {MAX_LEN} tokens para el target y de {MAX_NEW_TOKENS} tokens nuevos al generar "
-    f"{frase_limite}: el p95 queda muy por debajo del límite y solo la cola se le acerca. Si el "
-    f"límite bajara a 256, las soluciones del extremo podrían quedar truncadas y el problema se "
-    f"contaría como incorrecto por el recorte y no por el modelo."
-)
-
-partes.append(
-    f"**6. Qué tiene que generar el modelo.** De las {n_train} soluciones de `train`, "
-    f"{frase_una}, {frase_varias} y {frase_imports}; {frase_clases}. Además, {frase_recursion}, "
-    f"{frase_ciclos}. Esto explica por qué el target es el código de referencia completo y no solo "
-    f"el cuerpo de la función: si entrenáramos con el cuerpo, el modelo nunca aprendería a "
-    f"escribir los imports, las clases ni las funciones auxiliares que necesitan esos problemas."
-)
-
-partes.append(
-    f"**7. El estilo del código también importa.** {frase_tabs} para indentar, {frase_salida}, y "
-    f"{frase_linea}. El modelo puede imitar los tabs, así que el ejecutor tiene que aceptarlos y "
-    f"el tokenizador no puede asumir espacios. Que el corpus no imprima ni pida datos es una buena "
-    f"noticia: el código generado no debería llenar la salida ni quedarse esperando entrada, "
-    f"aunque nada impide que lo haga y por eso se ejecuta en un subproceso aparte."
-)
-
-partes.append(
-    f"**8. Los `assert` son uniformes pero exigentes.** En `train` y `validation` hay "
-    f"{total_asserts} `assert` y {frase_asserts}. Los valores esperados se reparten así: "
-    f"{detalle_tipos}. Que la mayoría sean constantes facilita la comparación, pero las listas, "
-    f"tuplas y diccionarios obligan a ejecutar el código y comparar estructuras, no texto. Por eso "
-    f"la verificación de la sección 6 corre el código generado en un subproceso y no intenta "
-    f"analizarlo estáticamente. Además, {frase_setup} confirma que el código de preparación tiene "
-    f"que ejecutarse antes de los `assert`, y en el orden que fija D-020."
-)
-
-partes.append(
-    f"**9. Riesgos que deja la exploración.** El primero es el tamaño: la solución más larga "
-    f"({max(largos_codigo_train)} caracteres) {frase_ratio}, así que cualquier límite de "
-    f"generación se define por la cola y no por el caso típico. El segundo son los tabs y las "
-    f"clases: el código generado puede ser sintácticamente válido y aun así fallar al ejecutarse "
-    f"por indentación o por nombres que no existen. El tercero es el silencio de `validation`: "
-    f"solo {n_validation} problemas, así que cada acierto mueve el pass@1 "
-    f"{puntos_por_problema} puntos porcentuales y no alcanza para elegir hiperparámetros finos. "
-    f"Los tres se cubren con el mismo diseño: límites holgados, ejecución aislada con timeout y "
-    f"decisiones tomadas sobre el conjunto completo de validación, nunca sobre `test`."
-)
-
-partes.append(
-    f"**10. Limitaciones de esta exploración.** Las longitudes están en caracteres y palabras, no "
-    f"en tokens: eso se mide en la sección 4 con cada tokenizador, porque depende del modelo. No "
-    f"medimos dificultad ni calidad de las soluciones, solo su forma. `validation` tiene "
-    f"{n_validation} ejemplos, suficiente para comparar distribuciones gruesas pero no para "
-    f"detectar diferencias pequeñas. Y `test` no se analizó a propósito (D-030): solo se contaron "
-    f"sus problemas y se revisaron sus identificadores."
-)
-
-display(Markdown("\n\n".join(partes)))
+# ### Lo que nos deja la exploración
+#
+# **1. Ficha del corpus.** MBPP trae 974 problemas repartidos en cuatro splits: 374 en `train`, 90
+# en `validation`, 500 en `test` y 10 en `prompt`. Para el proyecto usamos los tres primeros:
+# `train` para el finetuning, `validation` para vigilar el entrenamiento y elegir la época, y
+# `test` una sola vez al final. El split `prompt` no se usa ni para entrenar ni para evaluar.
+#
+# **2. Separación y fuga de datos.** Los `task_id` de `train` van del 601 al 974, los de
+# `validation` del 511 al 600 y los de `test` del 11 al 510. No hay un solo identificador repetido
+# entre particiones y tampoco hay enunciados ni soluciones duplicadas, ni exactas ni normalizadas
+# (se compararon los 374 de `train` y los 90 de `validation` con hash MD5, en minúsculas y con los
+# espacios colapsados). Esto importa porque una fuga entre `train` y `test` inflaría el pass@1 sin
+# que el modelo sea mejor: estaría resolviendo problemas que ya vio. La separación se sostiene
+# también a nivel de contenido, no solo de identificadores.
+#
+# **3. ¿Se parecen `train` y `validation`?** El enunciado promedia 78.4 caracteres en `train` y
+# 77.9 en `validation`, con p95 de 113 y 119. La solución promedia 178.4 y 182.4 caracteres, con
+# p95 de 412 y 447. La prueba de Kolmogorov-Smirnov no encuentra diferencias significativas:
+# estadístico 0.122 con p-valor 0.21 para el enunciado, y 0.087 con p-valor 0.63 para la solución.
+# Con 90 ejemplos la prueba tiene poca potencia, así que la lectura correcta es que no hay
+# evidencia suficiente para distinguir los splits, no que sean idénticos. Para lo que necesitamos
+# alcanza: si el modelo mejora en `validation`, es razonable esperar una mejora parecida en `test`.
+#
+# **4. Los enunciados son plantillas.** De los 374 problemas, 247 empiezan literalmente con “write
+# a function to”, 8 con “write a function that” y 115 con “write a python function”; los 4
+# restantes son variantes menores, como un título en mayúsculas. El vocabulario es pequeño: 573
+# palabras distintas en total y 551 sin contar las vacías y las de la plantilla. Las palabras con
+# contenido más frecuentes son `find` (122), `list` (94), `number` (74), `string` (68), `check`
+# (54), `tuple` (50) y `sum` (41). Esa uniformidad tiene dos consecuencias. Primero, el modelo no
+# necesita interpretar instrucciones muy diversas: aprende un molde y lo repite, así que el pass@1
+# dependerá sobre todo de resolver el problema y no de entender el enunciado. Segundo, el nombre
+# de la función objetivo solo aparece en 13 de los 374 enunciados (3.5 %), aunque los `assert` la
+# llaman por su nombre; sin la firma en el prompt, el modelo tendría que adivinarlo y el pass@1
+# caería por una razón que no es de programación. Por eso D-018 incluye el nombre y la firma, y
+# solo eso, en el prompt.
+#
+# **5. Las soluciones son cortas.** La mediana es de 145 caracteres y 5 líneas; el p95, de 412
+# caracteres y 16 líneas; la más larga llega a 908 caracteres y 29 líneas. Con estos tamaños, un
+# límite de 512 tokens para el target y de 512 tokens nuevos al generar deja margen de sobra: el
+# p95 queda muy por debajo del límite y solo la cola se le acerca. Si el límite bajara a 256, las
+# soluciones del extremo podrían quedar truncadas y el problema se contaría como incorrecto por el
+# recorte y no por el modelo. Ese es el argumento de D-019, y el conteo exacto en tokens se
+# confirma en la sección 4 con cada tokenizador.
+#
+# **6. Qué tiene que generar el modelo.** De las 374 soluciones de `train`, 360 son una sola
+# función, 14 tienen más de una y 87 traen imports; 2 declaran clases. Además, 23 soluciones son
+# recursivas, 122 usan un ciclo `for`, 32 un `while` y 165 un `if`. Esto explica por qué el target
+# es el código de referencia completo y no solo el cuerpo de la función: si entrenáramos con el
+# cuerpo, el modelo nunca aprendería a escribir los imports, las clases ni las funciones auxiliares
+# que necesitan esos problemas.
+#
+# **7. El estilo del código también importa.** 41 soluciones (11.0 %) usan tabs para indentar,
+# ninguna usa `print(` ni `input(`, y ninguna cabe en una sola línea. El modelo puede imitar los
+# tabs, así que el ejecutor tiene que aceptarlos y el tokenizador no puede asumir espacios. Que el
+# corpus no imprima ni pida datos es una buena noticia: el código generado no debería llenar la
+# salida ni quedarse esperando entrada, aunque nada impide que lo haga y por eso se ejecuta en un
+# subproceso aparte.
+#
+# **8. Los `assert` son uniformes pero exigentes.** En `train` y `validation` hay 1392 `assert` y
+# todos los problemas traen exactamente 3. Los valores esperados se reparten así: 948 constantes,
+# 294 listas, 93 tuplas, 36 diccionarios, 12 valores negativos, 6 conjuntos y 3 de otro tipo. Que
+# la mayoría sean constantes facilita la comparación, pero las listas, tuplas y diccionarios
+# obligan a ejecutar el código y comparar estructuras, no texto. Por eso la verificación de la
+# sección 6 corre el código generado en un subproceso y no intenta analizarlo estáticamente.
+# Además, el único problema con `test_setup_code` confirma que el código de preparación tiene que
+# ejecutarse antes de los `assert`, y en el orden que fija D-020.
+#
+# **9. Riesgos que deja la exploración.** El primero es el tamaño: la solución más larga (908
+# caracteres) es 6.3 veces la mediana de 145, así que cualquier límite de generación se define por
+# la cola y no por el caso típico. El segundo son los tabs y las clases: el código generado puede
+# ser sintácticamente válido y aun así fallar al ejecutarse por indentación o por nombres que no
+# existen. El tercero es el silencio de `validation`: solo 90 problemas, así que cada acierto mueve
+# el pass@1 1.1 puntos porcentuales y no alcanza para elegir hiperparámetros finos. Los tres se
+# cubren con el mismo diseño: límites holgados, ejecución aislada con timeout y decisiones tomadas
+# sobre el conjunto completo de validación, nunca sobre `test`.
+#
+# **10. Limitaciones de esta exploración.** Las longitudes están en caracteres y palabras, no en
+# tokens: eso se mide en la sección 4 con cada tokenizador, porque depende del modelo. No medimos
+# dificultad ni calidad de las soluciones, solo su forma. `validation` tiene 90 ejemplos,
+# suficiente para comparar distribuciones gruesas pero no para detectar diferencias pequeñas. Y
+# `test` no se analizó a propósito (D-030): solo se contaron sus problemas y se revisaron sus
+# identificadores.
+#
+# Con esto la sección 4 puede definir el prompt y el target con números en la mano: el formato de
+# instrucción tiene que aportar el nombre de la función, el target debe ser el código completo y el
+# límite de tokens puede fijarse en 512 sin truncar el 95 % de los casos.

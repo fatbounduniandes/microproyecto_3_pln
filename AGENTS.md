@@ -387,6 +387,19 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
   dataset); limitar la exploración a longitudes y conteos (no justifica el prompt ni el target).
 - **Consecuencia:** la sección 3 pasa a 18 celdas de código y 6 figuras, y suma `pandas` y
   `scipy` a las dependencias. Todo el análisis sigue limitado a `train` y `validation` (D-030).
+  > Reemplazada por D-033 en lo relativo a cómo se escriben las conclusiones.
+
+### D-033 · 2026-11-05 · Las conclusiones de la sección 3 van en markdown estático
+- **Decisión:** las conclusiones de la exploración son una celda markdown con las cifras escritas
+  a mano a partir de la corrida, no un texto generado con `display(Markdown(...))` ni f-strings.
+- **Motivo:** el dataset está fijado por revisión y el notebook siempre produce los mismos
+  valores, así que el texto dinámico no aporta; una celda de código de 150 líneas con f-strings es
+  más difícil de leer, de sustentar y de mantener que el markdown, y además obliga a importar
+  IPython. El markdown se ve igual en Colab y en GitHub.
+- **Descartado:** conclusiones calculadas (D-032); texto con cifras sin verificar contra la
+  corrida (por eso se transcriben los valores reales).
+- **Consecuencia:** se elimina la celda de código final y el import de `IPython.display`. Si algún
+  día cambia la revisión del dataset, hay que actualizar las cifras a mano.
 
 ---
 
@@ -499,7 +512,7 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
 - [x] Fase 1: Portada e introducción (alineada al estilo del MP2).
 - [x] Fase 2: Librerías (corrida en Colab T4; bf16 por emulación corregido en D-031).
 - [x] Fase 3: Carga del dataset y exploración (corrida en Colab; análisis ampliado con 6 figuras,
-      vocabulario, calidad, KS y conclusiones calculadas, D-030 y D-032; pendiente re-ejecutar).
+      vocabulario, calidad y KS; conclusiones en markdown, D-030 y D-033; pendiente re-ejecutar).
 - [ ] Fase 4: Prompts y preprocesamiento.
 - [ ] Fase 5: Particiones.
 - [ ] Fase 6: Evaluación pass@1.

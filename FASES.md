@@ -67,7 +67,7 @@ solo se hacen cuando él lo pide.
 - Análisis de los `assert`: cantidad por problema y tipo de valor esperado.
 - Seis figuras: boxplots, curva acumulada, palabras frecuentes, líneas por solución, estructura
   y construcciones.
-- Conclusiones generadas desde los números calculados, con hallazgos, riesgos y limitaciones.
+- Conclusiones en markdown con las cifras reales de la corrida, sin texto generado (D-033).
 - De `test` solo se cuentan los ejemplos y se revisan los identificadores (D-030).
 - **Lista cuando:** se imprimen los tamaños y ejemplos reales, salen las figuras y Jean aprueba
   el cierre.
