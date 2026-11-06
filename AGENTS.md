@@ -62,6 +62,8 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
   holgados en RAM).
 - **Consecuencia:** el notebook detecta `torch.cuda.is_bf16_supported()` y usa bf16 en L4/A100
   o fp16 + `GradScaler` en T4, sin cambios de código.
+  > La detección de bf16 se reemplaza por D-031: `is_bf16_supported()` devuelve `True` en T4 por
+  > emulación.
 
 ### D-003 · 2026-11-03 · Sincronización vía GitHub con HTTPS + `gh`
 - **Decisión:** Único mecanismo de sync: `git push` / `git pull` contra
@@ -348,6 +350,30 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
   cargar tokenizadores ni modelos (D-028) y el código mantiene el estilo básico de D-015, sin
   comentarios dentro del código (D-013).
 
+### D-030 · 2026-11-05 · La exploración no analiza el contenido de `test`
+- **Decisión:** en la sección 3, las estadísticas de longitud, la estructura del código y las
+  figuras se calculan solo sobre `train` y `validation`. De `test` únicamente se imprime su tamaño
+  y se revisan sus `task_id` para el chequeo de fuga.
+- **Motivo:** el enunciado reserva `test` para la evaluación final. Aunque mirar longitudes no es
+  ajustar hiperparámetros, hacerlo sobre `test` abre la puerta a decisiones informadas por el
+  conjunto de prueba y complica la defensa del protocolo.
+- **Descartado:** comparar los tres splits en la tabla y en las figuras (más vistoso, pero mezcla
+  el conjunto reservado con la exploración).
+- **Consecuencia:** las tres figuras (boxplots, curva acumulada y barras de estructura) comparan
+  `train` contra `validation`. El tamaño y los identificadores de `test` se siguen verificando.
+
+### D-031 · 2026-11-05 · La precisión mixta se elige por compute capability
+- **Decisión:** usar bf16 solo si `torch.cuda.get_device_properties(0).major >= 8` (Ampere o
+  superior: L4, A100). En T4 y en GPUs más viejas usar fp16 con `GradScaler`.
+- **Motivo:** la corrida del 2026-11-05 en una T4 imprimió `Precisión mixta: bfloat16`. Desde
+  PyTorch 2.5, `torch.cuda.is_bf16_supported(including_emulation=True)` devuelve `True` porque
+  emula bf16, no porque la tarjeta lo soporte; entrenar así es lento y frágil, y además apaga el
+  `GradScaler` que una T4 necesita.
+- **Descartado:** confiar en `is_bf16_supported()` (falso positivo en T4); fijar bf16 a mano
+  (falla en T4); fijar fp16 siempre (pierde el rango de bf16 en L4/A100).
+- **Consecuencia:** la sección 2 imprime el compute capability junto a la GPU, y una T4 cae en
+  fp16 + `GradScaler` sin tocar el resto del código. Reemplaza la detección descrita en D-002.
+
 ---
 
 ## 4. Reglas duras del proyecto (no negociables)
@@ -457,8 +483,9 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
       `build_notebook.py`, `requirements-colab.txt` y esqueleto de las 11 secciones.
 - [x] `build_notebook.py --check` en OK.
 - [x] Fase 1: Portada e introducción (alineada al estilo del MP2).
-- [x] Fase 2: Librerías (escrita; GPU, AMP y Drive se validan en Colab).
-- [x] Fase 3: Carga del dataset y exploración (escrita; se valida en Colab).
+- [x] Fase 2: Librerías (corrida en Colab T4; bf16 por emulación corregido en D-031).
+- [x] Fase 3: Carga del dataset y exploración (corrida en Colab; se amplió con tres figuras y
+      el análisis ya no toca `test`, D-030; pendiente re-ejecutar para ver las figuras).
 - [ ] Fase 4: Prompts y preprocesamiento.
 - [ ] Fase 5: Particiones.
 - [ ] Fase 6: Evaluación pass@1.

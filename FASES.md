@@ -46,20 +46,25 @@ solo se hacen cuando él lo pide.
 ### Fase 2 — Librerías
 - Instalación de `transformers`, `peft`, `datasets` y `accelerate` en Colab.
 - Imports, versiones, GPU, precisión (bf16/fp16), semilla, `DRIVE_DIR` y liberación de VRAM.
+- La precisión se elige por compute capability: bf16 desde 8.0 (L4, A100); T4 usa fp16 con
+  `GradScaler` (D-031).
 - Revisiones fijas de MBPP, Qwen2.5-1.5B y SmolLM2-1.7B junto a las constantes.
-- **Lista cuando:** en Colab se ve la GPU, el tipo de AMP y la semilla fijada.
+- **Lista cuando:** en Colab se ve la GPU, el compute capability, el tipo de AMP y la semilla.
+- **Estado:** corrida en Colab T4; mostró bf16 por emulación, corregido en D-031.
 
 ### Fase 3 — Carga del dataset y exploración
 - Carga de `google-research-datasets/mbpp` configuración `full` con revisión fija.
 - Descripción de los splits `train` (374), `validation` (90), `test` (500) y `prompt` (10).
 - Ejemplos reales de `text`, `code`, `test_list` y `test_setup_code`.
 - Verificación de que ningún `task_id` se repite entre splits.
-- Tabla comparativa de los tres splits y percentiles de largo en `train`, con histograma.
-- Estructura del código con `ast`: imports, clases y funciones auxiliares.
-- Revisión de `challenge_test_list` y de un ejemplo del split `prompt`.
-- Longitudes en caracteres y palabras; el conteo en tokens se hace en la sección 4, cuando ya
-  está cargado el tokenizador de cada modelo (D-028).
-- **Lista cuando:** se imprimen los tamaños y ejemplos reales, y Jean aprueba el cierre.
+- Análisis de longitudes y estructura del código **solo con `train` y `validation`**; de `test`
+  únicamente se cuentan los ejemplos y se revisan los identificadores (D-030).
+- Tres figuras: boxplots por split, curva acumulada y barras de estructura del código.
+- Revisión de `challenge_test_list`, del split `prompt` y de los casos extremos de `train`.
+- Longitudes en caracteres y palabras; el conteo en tokens se hace en la sección 4 (D-028).
+- **Lista cuando:** se imprimen los tamaños y ejemplos reales, salen las tres figuras y Jean
+  aprueba el cierre.
+- **Estado:** corrida en Colab hasta esta fase; faltan las figuras nuevas y el cierre con números.
 
 ### Fase 4 — Construcción de prompts y preprocesamiento
 - Formato de instrucción único: problema + nombre/firma de la función objetivo.

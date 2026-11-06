@@ -81,8 +81,10 @@ Colab: abrir/clonar el repo y Runtime > Run All
 Reglas de Colab:
 
 - No editar el notebook en Colab: se pierde al regenerar desde `src/cells/`.
-- Antes de un run largo, verificar `torch.cuda.get_device_name(0)` y
-  `torch.cuda.is_bf16_supported()`.
+- Antes de un run largo, verificar `torch.cuda.get_device_name(0)` y el compute capability
+  (`torch.cuda.get_device_properties(0).major`): bf16 solo desde 8.0 (L4, A100); una T4 es 7.5 y
+  va con fp16 + `GradScaler`. Ojo: `is_bf16_supported()` devuelve `True` en T4 por emulación, así
+  que no sirve para decidir.
 - Para el run final, hacer `Runtime > Factory reset runtime` y partir de VRAM limpia.
 - Guardar checkpoints en Drive después de cada época o modelo; las sesiones se desconectan.
 
@@ -507,7 +509,7 @@ npx skills add <owner/repo@skill> -y
 npx skills remove <skill> -y
 
 # En Colab: verificar GPU
-python -c "import torch; print(torch.cuda.get_device_name(0)); print(torch.cuda.is_bf16_supported())"
+python -c "import torch; p = torch.cuda.get_device_properties(0); print(p.name); print(p.major, p.minor)"
 
 # En Colab: montar Drive
 from google.colab import drive
