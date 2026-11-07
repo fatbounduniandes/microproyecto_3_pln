@@ -90,6 +90,9 @@ solo se hacen cuando él lo pide.
 - Verificación de que no se usa `test` en entrenamiento ni en selección de hiperparámetros.
 - **Lista cuando:** las tres particiones quedan documentadas y el notebook no toca `test` antes
   de la sección 7.
+- **Estado:** escrita (D-036). Roles en tabla, 24 lotes por época, 50 de monitoreo elegidos con
+  `SEED = 42` (ids 511–600, 0 repetidos con `train`) y presupuesto de 33,984 / 40,201 tokens por
+  época; pendiente de ejecutar en Colab.
 
 ### Fase 6 — Implementación de la evaluación pass@1
 - Extracción de código generado (bloques markdown o texto plano).
@@ -98,8 +101,8 @@ solo se hacen cuando él lo pide.
 - Ejecución de código generado en subproceso aislado con timeout: código → `test_setup_code` →
   asserts.
 - Cálculo de pass@1 y guardado de resultados por problema.
-- **Lista cuando:** un modelo diminuto o un mock produce resultados coherentes y un bucle
-  infinito se corta por timeout sin tumbar el notebook.
+- **Lista cuando:** el sandbox corta un bucle infinito sin tumbar el notebook y las soluciones
+  escritas a mano producen resultados coherentes (D-036: sin modelo diminuto).
 
 ### Fase 7 — Evaluación de los modelos base (zero-shot)
 - Carga de Qwen2.5-1.5B y SmolLM2-1.7B base, uno a la vez.

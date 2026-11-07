@@ -434,6 +434,20 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
 - **Consecuencia:** `tokenizar_ejemplo` es la referencia para auditar y `preparar_lote` es la única
   vía para armar lotes de entrenamiento. La sección 5 aplica el pipeline a los tres splits.
 
+### D-036 · 2026-11-06 · 50 de validación con semilla y sin modelo diminuto
+- **Decisión:** el subconjunto de monitoreo son 50 problemas de `validation` elegidos con
+  `random.Random(SEED).sample` y ordenados por `task_id` (`EJEMPLOS_MONITOREO`). El sandbox de la
+  sección 6 se prueba con soluciones escritas a mano y no se descarga ningún modelo diminuto; la
+  generación por lotes se estrena en la sección 7 con Qwen base.
+- **Motivo:** los 90 problemas están ordenados por `task_id`, así que los primeros 50 podrían no
+  representar al conjunto; una muestra aleatoria con semilla cubre todo el rango y es reproducible.
+  Un modelo diminuto agrega una tercera descarga, no aporta sobre los casos sintéticos y roza la
+  regla de usar solo los dos modelos obligatorios.
+- **Descartado:** los primeros 50 (posible sesgo de orden); los 90 completos (multiplican la
+  generación, que es el cuello de botella del proyecto); modelo diminuto (dependencia extra).
+- **Consecuencia:** `EJEMPLOS_MONITOREO` queda fijo; cambiar la semilla cambia la lista y obliga a
+  repetir el entrenamiento. `FASES.md` (Fase 6) se ajusta para decir “soluciones escritas a mano”.
+
 ---
 
 ## 4. Reglas duras del proyecto (no negociables)
@@ -547,8 +561,9 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
 - [x] Fase 3: Carga del dataset y exploración (corrida en Colab; análisis ampliado con 6 figuras,
       vocabulario, calidad y KS; conclusiones en markdown, D-030 y D-033; pendiente re-ejecutar).
 - [ ] Fase 4: Prompts y preprocesamiento (sección 4 escrita con formato `### Signature`, target
-      completo + EOS y máscara `-100`; D-034 y D-035; pendiente validar en Colab).
-- [ ] Fase 5: Particiones.
+      completo + EOS y máscara `-100`; D-034 y D-035; corrida en Colab, pendiente revisar salidas).
+- [ ] Fase 5: Particiones (sección 5 escrita con roles, 50 de monitoreo con semilla y presupuesto
+      de épocas; D-036; pendiente correr en Colab).
 - [ ] Fase 6: Evaluación pass@1.
 - [ ] Fase 7: Evaluación base.
 - [ ] Fase 8: Finetuning LoRA.
