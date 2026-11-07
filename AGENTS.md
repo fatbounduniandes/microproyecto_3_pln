@@ -547,6 +547,22 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
 - **Consecuencia:** las secciones 7, 8 y 9 usan el extractor nuevo; los pass@1 base de una corrida
   anterior con el extractor viejo no son comparables y hay que regenerarlos en el `Run All` final.
 
+### D-043 · 2026-11-07 · Los bloques de validación se arman ejemplo por ejemplo
+- **Decisión:** `calcular_perdida` arma cada bloque con un `for` sobre los índices y una lista de
+  ejemplos, igual que `entrenar_epoca`, en lugar de cortar `ejemplos[inicio:fin]` directamente.
+- **Motivo:** `EJEMPLOS_ENTRENAMIENTO`, `EJEMPLOS_VALIDACION` y `EJEMPLOS_TEST` son objetos `Dataset`
+  de Hugging Face. En un `Dataset`, un corte devuelve un diccionario de columnas y no una lista de
+  ejemplos; al iterarlo salen las claves (`"text"`, `"code"`, …) y `construir_prompt` recibe un
+  string. La primera corrida real de la sección 8 falló justo ahí, al calcular la pérdida de
+  validación después de la primera época, con `TypeError: string indices must be integers`.
+- **Descartado:** convertir los splits en listas en la sección 5 (cambia la exploración ya validada
+  y el rol que el notebook declara para cada split); confiar en que el corte funcione (solo funciona
+  con listas de Python).
+- **Consecuencia:** cualquier función que necesite lotes de ejemplos los arma con índices; el
+  monitoreo de 50 problemas sigue siendo una lista y no se ve afectado. Se probó con un `Dataset`
+  falso cuyo corte devuelve columnas: 90 ejemplos de validación dan 6 lotes (`16×5 + 10`) y todos
+  los elementos que llegan a `preparar_lote` son diccionarios.
+
 ---
 
 ## 4. Reglas duras del proyecto (no negociables)

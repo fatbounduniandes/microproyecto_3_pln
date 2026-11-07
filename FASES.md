@@ -123,9 +123,10 @@ solo se hacen cuando él lo pide.
 - Guardado del mejor adaptador de cada modelo en Drive; liberar GPU entre ambos.
 - **Lista cuando:** existen `checkpoint_qwen2.5_1.5b_lora/` y `checkpoint_smollm2_1.7b_lora/`
   con sus tokenizadores y el historial de entrenamiento.
-- **Estado:** escrita (D-039). Receta de D-021 con fp32 + autocast, gradient checkpointing, 5
-  épocas, monitoreo por época, mejor adaptador e historial en `RESULTADOS_DIR`; pendiente correr en
-  Colab L4.
+- **Estado:** escrita (D-039 y D-043). Receta de D-021 con fp32 + autocast, gradient checkpointing, 5
+  épocas, monitoreo por época, mejor adaptador e historial en `RESULTADOS_DIR`. Los bloques de
+  validación se arman por índices porque los splits son `Dataset` de Hugging Face; probado en local
+  con 90 ejemplos de validación en 6 lotes. Pendiente correr en Colab L4.
 
 ### Fase 9 — Evaluación de los modelos finetuneados
 - Carga de cada modelo base + su adaptador LoRA.
