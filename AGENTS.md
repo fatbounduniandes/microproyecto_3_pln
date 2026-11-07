@@ -448,6 +448,26 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
 - **Consecuencia:** `EJEMPLOS_MONITOREO` queda fijo; cambiar la semilla cambia la lista y obliga a
   repetir el entrenamiento. `FASES.md` (Fase 6) se ajusta para decir “soluciones escritas a mano”.
 
+### D-037 · 2026-11-06 · Evaluación pass@1: extracción, sandbox y registro por problema
+- **Decisión:** `generar_soluciones` sigue la receta del anexo (padding a la izquierda,
+  `attention_mask`, `pad_token = eos`, `do_sample=False`, `max_new_tokens=512` y recorte del
+  prompt). `extraer_codigo` toma el primer bloque cercado o, si no hay, el primer sufijo que es
+  Python válido, de modo que conserva imports, clases, asignaciones y funciones. `ejecutar_solucion`
+  corre `subprocess.run([sys.executable, "-I", "-c", script], timeout=5)` en una carpeta temporal,
+  con `HOME` temporal y sin variables de credenciales, en el orden código → `test_setup_code` →
+  asserts. `evaluar_pass1` devuelve un resumen y guarda `pass1_<nombre>.json` con el código, el
+  motivo y el tiempo de cada problema.
+- **Motivo:** el protocolo exige una solución greedy por problema y ejecución aislada; guardar el
+  código y el motivo permite mostrar ejemplos cualitativos en la sección 10 y diagnosticar los
+  fallos. El orden código → setup → asserts es obligatorio en el problema 367, el único de `test`
+  con `test_setup_code`, cuyo setup instancia `Node` antes de que exista si el setup va primero.
+- **Descartado:** `exec` en el kernel (puede tumbar la sesión); `multiprocessing` (no mata los
+  procesos hijos de forma fiable); extraer solo bloques cercados (los modelos base suelen responder
+  en texto plano); guardar solo el agregado (sin evidencia para la sección 10).
+- **Consecuencia:** las secciones 7 y 9 llaman `evaluar_pass1` una vez por configuración; la sección
+  8 la reutiliza para los 50 de monitoreo. La primera generación real ocurre en la sección 7, donde
+  se revisa el primer lote y se confirma que el modelo no continúa `### Signature`.
+
 ---
 
 ## 4. Reglas duras del proyecto (no negociables)
@@ -564,7 +584,8 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
       completo + EOS y máscara `-100`; D-034 y D-035; corrida en Colab, pendiente revisar salidas).
 - [ ] Fase 5: Particiones (sección 5 escrita con roles, 50 de monitoreo con semilla y presupuesto
       de épocas; D-036; pendiente correr en Colab).
-- [ ] Fase 6: Evaluación pass@1.
+- [ ] Fase 6: Evaluación pass@1 (sección 6 escrita con generación por lotes, extracción tolerante,
+      sandbox con timeout y JSON por problema; D-037; pendiente correr en Colab).
 - [ ] Fase 7: Evaluación base.
 - [ ] Fase 8: Finetuning LoRA.
 - [ ] Fase 9: Evaluación finetuneada.
