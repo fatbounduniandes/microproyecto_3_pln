@@ -1,18 +1,18 @@
 # %% [markdown]
 # ## 11. Conclusiones
 #
-# **42. LoRA cumple el objetivo, sobre todo en SmolLM2.** Qwen2.5-1.5B pasó de 41.0 % a 43.6 %
-# (+2.6 pp) y SmolLM2-1.7B de 4.8 % a 32.6 % (+27.8 pp) sobre los mismos 500 problemas de `test`.
+# **42. LoRA cumple el objetivo, sobre todo en SmolLM2.** Qwen2.5-1.5B pasó de 41.2 % a 43.6 %
+# (+2.4 pp) y SmolLM2-1.7B de 4.6 % a 31.6 % (+27.0 pp) sobre los mismos 500 problemas de `test`.
 # El resultado no es un modelo nuevo: es el mismo base con un adaptador de 4.3 y 6.3 millones de
 # parámetros que se puede guardar, compartir y volver a cargar. En SmolLM2 el cambio es grande porque
 # el punto de partida era muy bajo; en Qwen es moderado porque el base ya resolvía cuatro de cada
-# diez problemas. Los intervalos de Wilson al 95 % lo confirman: en Qwen se solapan (36.8–45.4 % y
-# 39.3–48.0 %), así que el +2.6 pp es compatible con el ruido de muestreo; en SmolLM2 no se solapan
-# (3.2–7.0 % y 28.6–36.8 %).
+# diez problemas. Los intervalos de Wilson al 95 % lo confirman: en Qwen se solapan (37.0–45.6 % y
+# 39.3–48.0 %), así que el +2.4 pp es compatible con el ruido de muestreo; en SmolLM2 no se solapan
+# (3.1–6.8 % y 27.7–35.8 %).
 #
 # **43. El formato del prompt fue parte de la solución.** Incluir el nombre y la firma de la función,
 # y entrenar con el código de referencia completo más el EOS, permitió que los dos modelos escribieran
-# funciones con la API correcta y que SmolLM2 pasara de 396 fallos de sintaxis a 5. La explicación más
+# funciones con la API correcta y que SmolLM2 pasara de 397 fallos de sintaxis a 5. La explicación más
 # directa es haber visto 374 soluciones completas con una instrucción fija. Al mismo tiempo, el prompt
 # no lleva la solución ni los `assert`, así que el pass@1 mide generación y no memoria del dataset.
 #
