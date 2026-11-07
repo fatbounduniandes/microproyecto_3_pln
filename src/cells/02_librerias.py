@@ -45,7 +45,7 @@ from datasets import load_dataset
 from google.colab import drive
 from peft import LoraConfig, PeftModel, get_peft_model
 from scipy.stats import ks_2samp
-from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import AutoModelForCausalLM, AutoTokenizer, get_cosine_schedule_with_warmup
 
 warnings.filterwarnings("ignore")
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
