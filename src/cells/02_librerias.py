@@ -5,10 +5,13 @@
 # verificamos la GPU y la precisión mixta, montamos Drive y fijamos la semilla.
 
 # %% [markdown]
-# Instalamos las versiones de Hugging Face que usamos en el proyecto.
+# Instalamos las versiones de Hugging Face que usamos en el proyecto. Colab trae `torchao` 0.10 y
+# PEFT 0.21 exige 0.16 o superior; como no usamos cuantización con torchao, la desinstalamos para que
+# PEFT no la detecte al cargar el modelo.
 
 # %%
 !pip install -q "transformers>=4.44,<5" "peft>=0.13,<1" "datasets>=2.20,<4" "accelerate>=0.33"
+!pip uninstall -y -q torchao
 
 # %% [markdown]
 # Importamos lo necesario y comprobamos las versiones que quedaron cargadas. `ast` lo usamos para

@@ -99,9 +99,10 @@ print("último token en el lote:", ultimo_en_lote)
 
 # %% [markdown]
 # El modelo devuelve texto, no código. Puede encerrar la solución en un bloque markdown, repetir el
-# encabezado `### Solution` o escribir una frase antes del `def`. La extracción se queda con el
-# primer fragmento que es Python válido y descarta lo que no lo es, pero no corrige el código: si el
-# modelo no escribe una solución válida, el problema falla.
+# encabezado `### Solution`, escribir una frase antes del `def` o agregar una explicación al final.
+# La extracción se queda con el primer fragmento que es Python válido, corta en encabezados
+# posteriores como `### Explanation` o `### Test` y descarta lo que no es código, pero no corrige la
+# solución: si el modelo no escribe Python válido, el problema falla.
 
 # %%
 def extraer_codigo(texto):
@@ -124,9 +125,20 @@ def extraer_codigo(texto):
     if "### Solution" in texto:
         texto = texto.split("### Solution")[-1]
 
-    for marca in ["\n### Problem", "\n### Signature"]:
+    marcas = ["\n### Problem", "\n### Signature", "\n### Explanation", "\n### Test"]
+    marcas.append("\n### Output")
+    marcas.append("\n### Example")
+    marcas.append("\n### Examples")
+    marcas.append("\n### Note")
+    marcas.append("\n### Code")
+    marcas.append("\n### Answer")
+    corte = len(texto)
+    for marca in marcas:
         if marca in texto:
-            texto = texto[: texto.index(marca)]
+            posicion = texto.index(marca)
+            if posicion > 0 and posicion < corte:
+                corte = posicion
+    texto = texto[:corte]
 
     lineas = texto.split("\n")
     for i in range(len(lineas)):
