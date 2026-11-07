@@ -468,6 +468,57 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
   8 la reutiliza para los 50 de monitoreo. La primera generación real ocurre en la sección 7, donde
   se revisa el primer lote y se confirma que el modelo no continúa `### Signature`.
 
+### D-038 · 2026-11-06 · Sección 7: evaluación base y primera lectura de `test`
+- **Decisión:** `test` se usa por primera vez y solo para medir. Antes de generar se verifican sus
+  metadatos (500 problemas, `task_id` únicos, cero solapamiento con `train` y `validation`, 3
+  `assert` y 1 `test_setup_code`). Los modelos base se cargan en `AMP_DTYPE` (bf16 en L4/A100, fp16
+  en T4) y se evalúan los 500 con `evaluar_pass1("qwen_base")` y `evaluar_pass1("smol_base")`.
+  Antes de la corrida completa se generan 4 soluciones y se revisa el texto crudo para confirmar
+  que el modelo no repite `### Signature` ni `### Problem` y que empieza con código.
+- **Motivo:** los dos pass@1 base son la referencia del aporte de LoRA; el protocolo debe ser
+  idéntico al de la sección 9. La prueba de formato es la que exige D-034 antes de entrenar.
+  Cargar en media precisión basta para inferencia y deja VRAM para el modelo siguiente.
+- **Descartado:** evaluar sobre `validation` (no es el protocolo del curso); cargar en fp32 para
+  generar (más lento y sin beneficio); saltar la prueba de formato (un prompt mal cerrado se
+  detectaría después de gastar la evaluación).
+- **Consecuencia:** quedan `pass1_qwen_base.json` y `pass1_smol_base.json` en `RESULTADOS_DIR`; la
+  sección 10 los lee junto con los dos finetuneados. La VRAM se libera con `modelo = None` y
+  `liberar_vram()`: borrar solo el parámetro dentro de la función no suelta la referencia.
+
+### D-039 · 2026-11-06 · Sección 8: receta de entrenamiento LoRA
+- **Decisión:** `LoraConfig(r=16, lora_alpha=16, lora_dropout=0.05,
+  target_modules=["q_proj","k_proj","v_proj","o_proj"])`, 5 épocas, lr 2e-4, weight decay 0.0,
+  batch efectivo 16, warmup del 5 % y scheduler coseno. El modelo base se carga en fp32 y el
+  forward/backward corre con `torch.autocast` en `AMP_DTYPE`; se activa gradient checkpointing,
+  `enable_input_require_grads()` y `use_cache=False` durante el entrenamiento. La pérdida de
+  validación se promedia por token supervisado. Cada época se monitorea con los 50 problemas y se
+  guarda el adaptador con mejor pass@1 (desempate por menor pérdida). El historial queda en
+  `RESULTADOS_DIR/historial_<modelo>.json`. Si el adaptador ya existe, se carga y se salta el
+  entrenamiento (D-007).
+- **Motivo:** es la receta de la skill y de D-021/D-022. El checkpointing reduce las activaciones
+  para que un 1.5B/1.7B entre con batch 16 en una L4 de 24 GB, y el base en fp32 con autocast evita
+  entrenar los pesos LoRA en bf16 con AdamW. El JSON de historial permite reconstruir la tabla y la
+  figura si la sesión se cae y toca reanudar.
+- **Descartado:** cargar el base en bf16 (más frágil para AdamW); micro-batch 8 con acumulación
+  (el checkpointing ya resuelve la memoria); guardar solo la última época (puede sobreajustar);
+  `Trainer`/TRL (D-025).
+- **Consecuencia:** se guardan adaptador, tokenizador e historial por modelo. Una segunda corrida
+  con los adaptadores en Drive no vuelve a entrenar; para el `Run All` final hay que borrarlos si se
+  quiere ver el entrenamiento completo.
+
+### D-040 · 2026-11-06 · Sección 9: evaluación de los adaptadores
+- **Decisión:** cada adaptador se carga con `PeftModel.from_pretrained` sobre su base en
+  `AMP_DTYPE`. Antes de evaluar se comprueba que exista `adapter_config.json` y se imprimen rango,
+  alpha, dropout, módulos y número de parámetros LoRA. Los 500 problemas se evalúan con el mismo
+  `evaluar_pass1` de las secciones 6 y 7, y la VRAM se libera entre modelos.
+- **Motivo:** el protocolo tiene que ser idéntico al de la sección 7 para que la diferencia mida
+  LoRA y no un cambio de generación. Verificar la configuración y los parámetros demuestra que el
+  checkpoint que se entrega es el que se entrenó.
+- **Descartado:** fusionar el adaptador con `merge_and_unload()` (D-023 pide el adaptador suelto);
+  reevaluar en `validation` (el pass@1 final es sobre `test`); evaluar un subconjunto.
+- **Consecuencia:** quedan `pass1_qwen_lora.json` y `pass1_smol_lora.json`; la sección 10 compara
+  las cuatro configuraciones y la sección 11 discute el resultado.
+
 ---
 
 ## 4. Reglas duras del proyecto (no negociables)
@@ -586,9 +637,12 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
       de épocas; D-036; pendiente correr en Colab).
 - [ ] Fase 6: Evaluación pass@1 (sección 6 escrita con generación por lotes, extracción tolerante,
       sandbox con timeout y JSON por problema; D-037; pendiente correr en Colab).
-- [ ] Fase 7: Evaluación base.
-- [ ] Fase 8: Finetuning LoRA.
-- [ ] Fase 9: Evaluación finetuneada.
+- [ ] Fase 7: Evaluación base (sección 7 escrita con integridad de `test`, carga en `AMP_DTYPE`,
+      prueba de formato y evaluación de los 500; D-038; pendiente correr en Colab L4).
+- [ ] Fase 8: Finetuning LoRA (sección 8 escrita con la receta de D-021, gradient checkpointing,
+      monitoreo por época, mejor adaptador e historial; D-039; pendiente correr en Colab L4).
+- [ ] Fase 9: Evaluación finetuneada (sección 9 escrita con carga de adaptadores, verificación de
+      configuración y evaluación de los 500; D-040; pendiente correr en Colab L4).
 - [ ] Fase 10: Comparación y resultados.
 - [ ] Fase 11: Conclusiones.
 - [ ] Fase 12: Smoke test.

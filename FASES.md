@@ -112,6 +112,8 @@ solo se hacen cuando él lo pide.
 - Evaluación de los 500 problemas de `test` con la misma configuración de generación.
 - Guardado de pass@1 y generaciones en Drive/resultados.
 - **Lista cuando:** existen los dos pass@1 base y se liberó la GPU entre modelos.
+- **Estado:** escrita (D-038). Verificación de `test`, carga en `AMP_DTYPE`, prueba de formato con
+  cuatro problemas y evaluación de los 500; pendiente correr en Colab L4.
 
 ### Fase 8 — Finetuning con LoRA
 - `LoraConfig(r=16, alpha=16, dropout=0.05, target_modules=["q_proj","k_proj","v_proj","o_proj"])`.
@@ -120,6 +122,9 @@ solo se hacen cuando él lo pide.
 - Guardado del mejor adaptador de cada modelo en Drive; liberar GPU entre ambos.
 - **Lista cuando:** existen `checkpoint_qwen2.5_1.5b_lora/` y `checkpoint_smollm2_1.7b_lora/`
   con sus tokenizadores y el historial de entrenamiento.
+- **Estado:** escrita (D-039). Receta de D-021 con fp32 + autocast, gradient checkpointing, 5
+  épocas, monitoreo por época, mejor adaptador e historial en `RESULTADOS_DIR`; pendiente correr en
+  Colab L4.
 
 ### Fase 9 — Evaluación de los modelos finetuneados
 - Carga de cada modelo base + su adaptador LoRA.
@@ -127,6 +132,8 @@ solo se hacen cuando él lo pide.
   sección 7.
 - Guardado de pass@1 y generaciones.
 - **Lista cuando:** existen los dos pass@1 finetuneados y se liberó la GPU entre modelos.
+- **Estado:** escrita (D-040). Carga de cada adaptador sobre su base, verificación de configuración
+  y evaluación de los 500 con el mismo `evaluar_pass1`; pendiente correr en Colab L4.
 
 ### Fase 10 — Comparación y resultados
 - Tabla de las cuatro configuraciones con pass@1 e intervalo de Wilson al 95 %.
