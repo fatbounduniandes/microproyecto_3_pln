@@ -101,3 +101,30 @@ for resumen in [resumen_qwen_lora, resumen_smol_lora]:
 
 tabla_lora = pd.DataFrame(filas_lora)
 print(tabla_lora.to_string(index=False))
+
+# %% [markdown]
+# ### Lo que nos deja la evaluación finetuneada
+#
+# **34. Los adaptadores cargados son los que entrenamos.** En los dos casos la verificación leyó
+# r=16, alpha=16, dropout 0.05 y los módulos q, k, v y o. Qwen tiene 4,358,144 parámetros LoRA y
+# SmolLM2 6,291,456, los mismos del entrenamiento, y las dos carpetas incluyen `adapter_config.json`,
+# `adapter_model.safetensors` y el tokenizador. La carga se hizo sobre el mismo modelo base y la
+# revisión fija, y la evaluación usó el mismo `evaluar_pass1` de las secciones 6 y 7.
+#
+# **35. Qwen + LoRA sube de 41.0 % a 43.6 %.** Acertó 218 de 500, trece problemas más que la base.
+# Los motivos quedaron en 243 `assert`, 36 errores, 3 de sintaxis y ningún timeout. La ganancia es
+# moderada y coherente con lo que anticipaba la sección 7: el formato ya estaba resuelto y LoRA tenía
+# que mejorar la solución, no solo la forma. Con 500 problemas, 13 aciertos son un +2.6 pp; en la
+# sección 10 los intervalos de Wilson muestran que esa diferencia se solapa con el ruido de muestreo.
+#
+# **36. SmolLM2 + LoRA sube de 4.8 % a 32.6 %.** Acertó 163 de 500, 139 problemas más que la base.
+# Lo más elocuente es el cambio de motivo: los fallos de sintaxis pasaron de 396 a 5 y los `assert`
+# subieron de 33 a 284. El adaptador no convirtió al modelo en un gran programador, pero sí le enseñó
+# a escribir una función ejecutable y a detenerse; ahora la mayoría de los fallos son de lógica.
+#
+# **37. La mejora se mide con el mismo protocolo.** El prompt, `max_new_tokens`, la decodificación
+# greedy y el sandbox son idénticos a los de la base, así que la diferencia entre 41.0 % y 43.6 %, y
+# entre 4.8 % y 32.6 %, no viene de un cambio de evaluación: en SmolLM2 es clara y en Qwen queda
+# dentro del ruido. La generación bajó de 583.6 a 372.4 s en Qwen y de 638.4 a 519.4 s en SmolLM2, una
+# señal compatible con respuestas más cortas y con haber aprendido a terminar; la métrica que decide
+# sigue siendo el pass@1, no el tiempo.

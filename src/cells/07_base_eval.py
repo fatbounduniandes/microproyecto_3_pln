@@ -215,3 +215,29 @@ for resumen in [resumen_qwen_base, resumen_smol_base]:
 
 tabla_base = pd.DataFrame(filas_base)
 print(tabla_base.to_string(index=False))
+
+# %% [markdown]
+# ### Lo que nos deja la evaluación base
+#
+# **26. Qwen2.5-1.5B ya es un baseline fuerte.** Acertó 205 de los 500 problemas (41.0 %), con
+# 583.6 s de generación y 31.2 s de ejecución. Sin ningún entrenamiento sobre MBPP, el modelo
+# resuelve cuatro de cada diez problemas, así que el margen de LoRA en este modelo es real pero
+# acotado: para subir hay que mejorar código que ya es válido en la mayoría de los casos.
+#
+# **27. SmolLM2-1.7B casi no sigue el formato.** Acertó 24 de 500 (4.8 %), con 638.4 s de generación
+# y 30.7 s de ejecución. En la prueba de cuatro problemas, 3 de 4 empiezan con código, 3 de 4 repiten
+# `### Problem` o `### Signature` y 3 de 4 producen Python válido; sus salidas miden entre 1,146 y
+# 1,540 caracteres, frente a 41–694 en Qwen. El modelo sabe escribir funciones, pero se enreda con el
+# formato y con el momento de terminar.
+#
+# **28. El perfil de fallo es distinto en cada modelo.** En Qwen hay 205 aciertos, 232 fallos por
+# `assert` (46.4 %), 56 por error de ejecución (11.2 %) y solo 7 por sintaxis (1.4 %). En SmolLM2,
+# 396 de los 500 fallos son de sintaxis (79.2 %), seguidos de 42 errores (8.4 %), 33 `assert` (6.6 %)
+# y 5 respuestas vacías (1.0 %). Qwen falla sobre todo resolviendo; SmolLM2 falla sobre todo
+# escribiendo.
+#
+# **29. Eso anticipa dónde puede aportar LoRA.** En SmolLM2 hay un problema de forma que el
+# finetuning puede corregir con pocos ejemplos: si el modelo aprende a escribir una función válida y
+# a detenerse, el pass@1 debería subir mucho. En Qwen el formato ya está resuelto y la mejora tiene
+# que venir de la calidad de la solución, que es más difícil de mover con 374 ejemplos. La
+# comparación base contra finetuneado tiene que leerse por modelo, no como un solo promedio.
