@@ -5,20 +5,20 @@ solo se hacen cuando él lo pide.
 
 ## Checklist
 
-- [x] **Fase 0 — Repo y base** (validada localmente; push pendiente)
+- [x] **Fase 0 — Repo y base** (validada localmente)
 - [x] **Fase 1 — Portada e introducción** (sección 1, alineada al estilo del MP2)
-- [x] **Fase 2 — Librerías** (sección 2 escrita; validación pendiente en Colab)
-- [x] **Fase 3 — Carga del dataset y exploración** (sección 3 escrita; validación pendiente en Colab)
-- [ ] **Fase 4 — Construcción de prompts y preprocesamiento** (sección 4)
-- [ ] **Fase 5 — Particiones (train / validation / test)** (sección 5)
-- [ ] **Fase 6 — Implementación de la evaluación pass@1** (sección 6)
-- [ ] **Fase 7 — Evaluación de los modelos base (zero-shot)** (sección 7)
-- [ ] **Fase 8 — Finetuning con LoRA** (sección 8)
-- [ ] **Fase 9 — Evaluación de los modelos finetuneados** (sección 9)
-- [ ] **Fase 10 — Comparación y resultados** (sección 10)
-- [ ] **Fase 11 — Conclusiones** (sección 11)
-- [ ] **Fase 12 — Smoke test en Colab T4/L4**
-- [ ] **Fase 13 — Run final y entrega**
+- [x] **Fase 2 — Librerías** (sección 2 validada en Colab)
+- [x] **Fase 3 — Carga del dataset y exploración** (sección 3 validada en Colab)
+- [x] **Fase 4 — Construcción de prompts y preprocesamiento** (sección 4)
+- [x] **Fase 5 — Particiones (train / validation / test)** (sección 5)
+- [x] **Fase 6 — Implementación de la evaluación pass@1** (sección 6)
+- [x] **Fase 7 — Evaluación de los modelos base (zero-shot)** (sección 7)
+- [x] **Fase 8 — Finetuning con LoRA** (sección 8)
+- [x] **Fase 9 — Evaluación de los modelos finetuneados** (sección 9)
+- [x] **Fase 10 — Comparación y resultados** (sección 10)
+- [x] **Fase 11 — Conclusiones** (sección 11)
+- [x] **Fase 12 — Smoke test en Colab T4/L4**
+- [ ] **Fase 13 — Run final y entrega** (notebook ejecutado listo; pendiente el `.zip`)
 
 ---
 
@@ -115,8 +115,8 @@ solo se hacen cuando él lo pide.
 - **Lista cuando:** existen los dos pass@1 base y se liberó la GPU entre modelos.
 - **Estado:** completada (D-038). Verificación de `test` (500 problemas, 0 solapamientos, 3 asserts
   y 1 `test_setup_code`), carga en `AMP_DTYPE`, prueba de formato y evaluación de los 500 en Colab
-  A100 80GB. Resultados: Qwen base 41.0 % (205/500, 583.6 s de generación) y SmolLM2 base 4.8 %
-  (24/500, 638.4 s).
+  L4. Resultados finales: Qwen base 41.2 % (206/500, 579.6 s de generación) y SmolLM2 base 4.6 %
+  (23/500, 629.2 s).
 
 ### Fase 8 — Finetuning con LoRA
 - `LoraConfig(r=16, alpha=16, dropout=0.05, target_modules=["q_proj","k_proj","v_proj","o_proj"])`.
@@ -140,8 +140,8 @@ solo se hacen cuando él lo pide.
 - **Lista cuando:** existen los dos pass@1 finetuneados y se liberó la GPU entre modelos.
 - **Estado:** completada (D-040). Carga de cada adaptador sobre su base, verificación de configuración
   (r=16, alpha=16, dropout 0.05, q/k/v/o) y evaluación de los 500 con el mismo `evaluar_pass1` en
-  Colab A100 80GB. Resultados: Qwen + LoRA 43.6 % (218/500, 372.4 s de generación) y SmolLM2 + LoRA
-  32.6 % (163/500, 519.4 s).
+  Colab L4. Resultados finales: Qwen + LoRA 43.6 % (218/500, 414.4 s de generación) y SmolLM2 + LoRA
+  31.6 % (158/500, 475.5 s).
 
 ### Fase 10 — Comparación y resultados
 - Tabla de las cuatro configuraciones con pass@1 e intervalo de Wilson al 95 %.
@@ -153,7 +153,7 @@ solo se hacen cuando él lo pide.
 - **Estado:** escrita (D-044). Sección de 12 celdas con tabla de las cuatro configuraciones e
   intervalos de Wilson al 95 %, barras de pass@1, motivos apilados, matriz de transición base → LoRA
   y dos ejemplos cualitativos por modelo más un ejemplo de regresión. No vuelve a generar: usa los
-  resúmenes de las secciones 7 y 9.
+  resúmenes de las secciones 7 y 9. Cifras finales del run en L4: 41.2 %, 43.6 %, 4.6 % y 31.6 %.
 
 ### Fase 11 — Conclusiones
 - Discusión de resultados, seguimiento del entrenamiento, hiperparámetros y limitaciones.
@@ -165,8 +165,12 @@ solo se hacen cuando él lo pide.
 ### Fase 12 — Smoke test en Colab T4/L4
 - Corrida completa con menos datos o menos épocas para detectar errores rápido.
 - **Lista cuando:** `Run All` termina sin excepciones en T4 o L4.
+- **Estado:** completada (D-046). El run final en L4 ejecutó las 163 celdas, 72 de código, con 0
+  errores y 10 figuras. Los adaptadores se cargaron desde Drive sin reentrenar.
 
 ### Fase 13 — Run final y entrega
 - `Run All` en L4 o A100 con los hiperparámetros definitivos.
 - `.zip` con notebook ejecutado + los dos adaptadores, subido a Drive con permiso de lector.
 - **Lista cuando:** la descarga funciona en modo incógnito y el zip contiene todo lo exigido.
+- **Estado:** notebook ejecutado listo (`resultados/notebook.ipynb`). Pendiente el `.zip` y la prueba
+  en incógnito.

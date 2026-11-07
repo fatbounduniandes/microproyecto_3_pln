@@ -8,7 +8,7 @@ silencio: se marca como reemplazada y se agrega una nueva.
 - **Curso:** Modelos Avanzados para el Procesamiento de Lenguaje Natural (MAPLN) — Maestría en IA.
 - **Repositorio:** `fatbounduniandes/microproyecto_3_pln` (público).
 - **Rama principal:** `main`.
-- **Última actualización de esta bitácora:** 2026-11-03.
+- **Última actualización de esta bitácora:** 2026-11-07.
 
 ---
 
@@ -571,8 +571,8 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
   existe.
 - **Motivo:** los resúmenes ya traen el código y el motivo de cada problema, así que regenerar sería
   pagar dos veces la parte más cara del proyecto. El intervalo de Wilson evita leer como real una
-  diferencia de dos o tres problemas; en Qwen los intervalos de 41.0 % y 43.6 % se solapan, mientras
-  que en SmolLM2 los de 4.8 % y 32.6 % no. La matriz separa las ganancias de las regresiones y los
+  diferencia de dos o tres problemas; en Qwen los intervalos de 41.2 % y 43.6 % se solapan, mientras
+  que en SmolLM2 los de 4.6 % y 31.6 % no. La matriz separa las ganancias de las regresiones y los
   ejemplos muestran qué cambió en concreto.
 - **Descartado:** volver a generar en la sección 10 (caro y redundante); quedarse solo con la tabla
   agregada (oculta regresiones); escribir a mano los conteos de la matriz (se desactualizan); elegir
@@ -582,6 +582,8 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
   las conclusiones solo citan las cifras agregadas y los intervalos.
 
 ### D-045 · 2026-11-07 · Entrega final con los adaptadores ya entrenados
+> Reemplazada por D-046 en lo relativo a la GPU del run final y a las cifras finales.
+
 - **Decisión:** para el `Run All` final se conservan en Drive los dos adaptadores y sus historiales. La
   sección 8 los encuentra, imprime su configuración, carga el historial y salta el entrenamiento; la
   tabla y la figura de las cinco épocas se siguen mostrando. El run final se hace en la misma A100
@@ -598,6 +600,25 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
   las líneas de cada época, pero conserva la tabla y la figura del historial. El zip incluye los dos
   adaptadores; un evaluador que corra el notebook sin ellos entrenará desde cero y obtendrá cifras
   parecidas, no necesariamente idénticas.
+
+### D-046 · 2026-11-07 · Run final en L4 y sincronización de markdown
+- **Decisión:** el run final se hizo en una L4 (22 GB, bf16) con los dos adaptadores ya entrenados. Los
+  resultados fueron Qwen base 41.2 % (206/500), Qwen + LoRA 43.6 % (218/500), SmolLM2 base 4.6 %
+  (23/500) y SmolLM2 + LoRA 31.6 % (158/500). Las conclusiones 26–43, el README y esta bitácora se
+  actualizaron a esas cifras. Como el cambio fue solo de markdown, el notebook ejecutado se
+  sincronizó celda por celda con `notebook.ipynb` conservando los códigos y las salidas del run.
+- **Motivo:** la corrida en L4 terminó con 0 errores y era el entorno disponible. Las diferencias con
+  la corrida previa en A100 (205/218/24/163) son de uno a cinco problemas y provienen de los kernels
+  de la GPU, no del código; la lectura cualitativa no cambia: Qwen mejora dentro del ruido y SmolLM2
+  mejora con claridad. Repetir todo el run para cambiar solo texto habría costado otra sesión completa
+  sin aportar evidencia nueva.
+- **Descartado:** volver a correr en A100 para intentar reproducir las cifras viejas (dependía de
+  disponibilidad y no garantizaba los mismos veredictos); dejar el texto con las cifras de A100
+  (contradice las salidas); editar el `.ipynb` a mano celda por celda (propenso a errores).
+- **Consecuencia:** D-045 queda reemplazada en la GPU y en las cifras. El notebook ejecutado conserva
+  los 72 códigos y sus salidas del run en L4, y su markdown coincide con `src/cells/`. Si se vuelve a
+  correr en otra GPU, las cifras pueden moverse de nuevo y habría que repetir esta sincronización. La
+  entrega usa 41.2 %, 43.6 %, 4.6 % y 31.6 %.
 
 ---
 
@@ -710,7 +731,7 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
 - [x] Fase 1: Portada e introducción (alineada al estilo del MP2).
 - [x] Fase 2: Librerías (corrida en Colab T4; bf16 por emulación corregido en D-031).
 - [x] Fase 3: Carga del dataset y exploración (corrida en Colab; análisis ampliado con 6 figuras,
-      vocabulario, calidad y KS; conclusiones en markdown, D-030 y D-033; pendiente re-ejecutar).
+      vocabulario, calidad y KS; conclusiones en markdown, D-030 y D-033).
 - [x] Fase 4: Prompts y preprocesamiento (formato `### Signature`, target completo + EOS y máscara
       `-100`; D-034 y D-035; corrida completa en Colab A100 80GB).
 - [x] Fase 5: Particiones (roles de los splits, 50 de monitoreo con semilla y presupuesto de épocas;
@@ -718,19 +739,19 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
 - [x] Fase 6: Evaluación pass@1 (generación por lotes, extracción tolerante, sandbox con timeout y
       JSON por problema; D-037 y D-042; corrida completa en Colab A100 80GB).
 - [x] Fase 7: Evaluación base (integridad de `test`, carga en `AMP_DTYPE`, prueba de formato y
-      evaluación de los 500; D-038). Resultados: Qwen base 41.0 % (205/500) y SmolLM2 base
-      4.8 % (24/500).
+      evaluación de los 500; D-038). Resultados finales en L4: Qwen base 41.2 % (206/500) y SmolLM2
+      base 4.6 % (23/500).
 - [x] Fase 8: Finetuning LoRA (receta de D-021/D-039, gradient checkpointing, monitoreo por época,
       mejor adaptador e historial; D-043). Adaptadores en Drive, mejor época 5 en los dos modelos;
       monitoreo final 48 % (Qwen) y 32 % (SmolLM2) sobre los 50 de validación.
 - [x] Fase 9: Evaluación finetuneada (carga de adaptadores, verificación de configuración y
-      evaluación de los 500; D-040). Resultados: Qwen + LoRA 43.6 % (218/500) y SmolLM2 + LoRA
-      32.6 % (163/500).
+      evaluación de los 500; D-040). Resultados finales en L4: Qwen + LoRA 43.6 % (218/500) y
+      SmolLM2 + LoRA 31.6 % (158/500).
 - [x] Fase 10: Comparación y resultados (tabla con intervalos de Wilson, barras de pass@1, motivos
       apilados, matriz de transición y ejemplos cualitativos; D-044).
 - [x] Fase 11: Conclusiones (42–47: discusión, limitaciones y trabajo futuro).
-- [ ] Fase 12: Smoke test.
-- [ ] Fase 13: Run final y entrega.
+- [x] Fase 12: Smoke test (run completo en L4, 0 errores; D-046).
+- [ ] Fase 13: Entrega (notebook ejecutado listo; pendiente el `.zip` y la prueba en incógnito).
 
 ---
 
