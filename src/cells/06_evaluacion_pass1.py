@@ -162,6 +162,8 @@ textos = [
     "```python\ndef doblar(x):\n    return 2 * x\n```",
     "Aquí está la solución:\n\ndef doblar(x):\n    return 2 * x\n",
     "### Solution\ndef doblar(x):\n    return 2 * x\n\n### Problem\nOtro problema",
+    "def doblar(x):\n    return 2 * x\n\n### Explanation\nDevuelve el doble.",
+    "def doblar(x):\n    return 2 * x\n\n### Test\nprint(doblar(3))",
     "MAX = 10\n\ndef doblar(x):\n    return MAX * x\n",
 ]
 

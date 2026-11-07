@@ -66,7 +66,9 @@ def contar_parametros_lora(modelo):
 # %% [markdown]
 # Preparamos los lotes con `preparar_lote`, que ya deja el prompt y el relleno en `-100`. La pérdida
 # de validación se promedia por token supervisado y no por lote, para que los lotes con respuestas
-# cortas no pesen lo mismo que los largos.
+# cortas no pesen lo mismo que los largos. El bloque se arma ejemplo por ejemplo porque los splits
+# son objetos `Dataset` de Hugging Face: cortarlos con `[inicio:fin]` devuelve un diccionario de
+# columnas, no una lista de ejemplos.
 
 # %%
 def mover_lote(lote):
@@ -82,7 +84,9 @@ def calcular_perdida(modelo, tokenizador, ejemplos):
     tokens_total = 0
 
     for inicio in range(0, len(ejemplos), BATCH_SIZE):
-        bloque = ejemplos[inicio: inicio + BATCH_SIZE]
+        bloque = []
+        for posicion in range(inicio, min(inicio + BATCH_SIZE, len(ejemplos))):
+            bloque.append(ejemplos[posicion])
         lote = preparar_lote(bloque, tokenizador)
         lote = mover_lote(lote)
         with torch.autocast(device_type="cuda", dtype=AMP_DTYPE):
