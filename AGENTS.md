@@ -519,6 +519,34 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
 - **Consecuencia:** quedan `pass1_qwen_lora.json` y `pass1_smol_lora.json`; la sección 10 compara
   las cuatro configuraciones y la sección 11 discute el resultado.
 
+### D-041 · 2026-11-06 · Desinstalar `torchao` en la sección 2
+- **Decisión:** la celda de instalación de la sección 2 ejecuta `pip uninstall -y -q torchao` después
+  de instalar `transformers`, `peft`, `datasets` y `accelerate`.
+- **Motivo:** Colab trae `torchao` 0.10 y PEFT 0.21 exige 0.16 o superior; al construir el modelo,
+  `get_peft_model` llama a `is_torchao_available` y lanza `ImportError`. El proyecto no usa
+  cuantización con torchao, así que la forma más segura de evitar el conflicto es que PEFT no la
+  detecte. Actualizar torchao obligaría a importar `torchao.utils` en el despacho de LoRA y podría
+  chocar con la versión de PyTorch de Colab.
+- **Descartado:** actualizar `torchao>=0.16` (PEFT lo importa al despachar LoRA y el wheel puede no
+  coincidir con el torch de Colab); fijar `peft<0.19` (cambia la versión validada de PEFT y obliga a
+  otra descarga).
+- **Consecuencia:** en un Colab limpio la sección 2 deja el entorno sin torchao y la sección 8 puede
+  construir el modelo. Si torchao no está instalado, `pip` solo avisa y sigue.
+
+### D-042 · 2026-11-06 · Cortar encabezados posteriores en `extraer_codigo`
+- **Decisión:** además de `### Problem` y `### Signature`, `extraer_codigo` corta en
+  `### Explanation`, `### Test`, `### Output`, `### Example`, `### Examples`, `### Note`, `### Code`
+  y `### Answer`. Se queda con el corte más temprano que aparezca después del inicio del texto.
+- **Motivo:** la corrida de la sección 7 mostró soluciones correctas seguidas de una explicación o de
+  una sección de pruebas; el extractor anterior intentaba parsear todo el bloque y las marcaba como
+  error de sintaxis. Cortar en esos encabezados mide la solución y no el texto que la acompaña, y se
+  aplica igual a las cuatro configuraciones.
+- **Descartado:** parsear solo el primer bloque cercado (los modelos base suelen responder en texto
+  plano); dejar el extractor anterior (penaliza soluciones correctas por la explicación final);
+  recortar línea por línea hasta que parsee (más caro y menos predecible).
+- **Consecuencia:** las secciones 7, 8 y 9 usan el extractor nuevo; los pass@1 base de una corrida
+  anterior con el extractor viejo no son comparables y hay que regenerarlos en el `Run All` final.
+
 ---
 
 ## 4. Reglas duras del proyecto (no negociables)
@@ -636,7 +664,7 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
 - [ ] Fase 5: Particiones (sección 5 escrita con roles, 50 de monitoreo con semilla y presupuesto
       de épocas; D-036; pendiente correr en Colab).
 - [ ] Fase 6: Evaluación pass@1 (sección 6 escrita con generación por lotes, extracción tolerante,
-      sandbox con timeout y JSON por problema; D-037; pendiente correr en Colab).
+      sandbox con timeout y JSON por problema; D-037 y D-042; pendiente correr en Colab).
 - [ ] Fase 7: Evaluación base (sección 7 escrita con integridad de `test`, carga en `AMP_DTYPE`,
       prueba de formato y evaluación de los 500; D-038; pendiente correr en Colab L4).
 - [ ] Fase 8: Finetuning LoRA (sección 8 escrita con la receta de D-021, gradient checkpointing,

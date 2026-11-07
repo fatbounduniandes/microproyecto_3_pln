@@ -103,9 +103,10 @@ solo se hacen cuando él lo pide.
 - Cálculo de pass@1 y guardado de resultados por problema.
 - **Lista cuando:** el sandbox corta un bucle infinito sin tumbar el notebook y las soluciones
   escritas a mano producen resultados coherentes (D-036: sin modelo diminuto).
-- **Estado:** escrita (D-037). `generar_soluciones`, `extraer_codigo`, `ejecutar_solucion` y
+- **Estado:** escrita (D-037 y D-042). `generar_soluciones`, `extraer_codigo`, `ejecutar_solucion` y
   `evaluar_pass1`; seis pruebas del sandbox superadas en local (correcta, incorrecta, bucle
-  infinito, sintaxis, vacía y orden con setup); pendiente de ejecutar en Colab.
+  infinito, sintaxis, vacía y orden con setup) y cortes en encabezados posteriores; pendiente de
+  ejecutar en Colab.
 
 ### Fase 7 — Evaluación de los modelos base (zero-shot)
 - Carga de Qwen2.5-1.5B y SmolLM2-1.7B base, uno a la vez.
