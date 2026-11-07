@@ -563,6 +563,42 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
   falso cuyo corte devuelve columnas: 90 ejemplos de validación dan 6 lotes (`16×5 + 10`) y todos
   los elementos que llegan a `preparar_lote` son diccionarios.
 
+### D-044 · 2026-11-07 · Sección 10: comparación sin volver a generar
+- **Decisión:** la sección 10 se arma con los `resumen_*` que dejan las secciones 7 y 9 en memoria: tabla de
+  las cuatro configuraciones con pass@1 e intervalo de Wilson al 95 %, barras de pass@1, barras apiladas
+  de motivos, matriz de transición base → LoRA por `task_id`, dos ejemplos cualitativos por modelo
+  (los de código más corto entre los que la base falla y LoRA resuelve) y un ejemplo de regresión si
+  existe.
+- **Motivo:** los resúmenes ya traen el código y el motivo de cada problema, así que regenerar sería
+  pagar dos veces la parte más cara del proyecto. El intervalo de Wilson evita leer como real una
+  diferencia de dos o tres problemas; en Qwen los intervalos de 41.0 % y 43.6 % se solapan, mientras
+  que en SmolLM2 los de 4.8 % y 32.6 % no. La matriz separa las ganancias de las regresiones y los
+  ejemplos muestran qué cambió en concreto.
+- **Descartado:** volver a generar en la sección 10 (caro y redundante); quedarse solo con la tabla
+  agregada (oculta regresiones); escribir a mano los conteos de la matriz (se desactualizan); elegir
+  los ejemplos a dedo (no reproducible).
+- **Consecuencia:** la sección 10 depende de que las secciones 7 y 9 hayan corrido en la misma sesión,
+  igual que el resto del notebook. Los conteos exactos de transición quedan en la tabla calculada y
+  las conclusiones solo citan las cifras agregadas y los intervalos.
+
+### D-045 · 2026-11-07 · Entrega final con los adaptadores ya entrenados
+- **Decisión:** para el `Run All` final se conservan en Drive los dos adaptadores y sus historiales. La
+  sección 8 los encuentra, imprime su configuración, carga el historial y salta el entrenamiento; la
+  tabla y la figura de las cinco épocas se siguen mostrando. El run final se hace en la misma A100
+  80GB y las conclusiones usan 41.0 %, 43.6 %, 4.8 % y 32.6 %.
+- **Motivo:** la decodificación es greedy y los pesos no cambian, así que regenerar las evaluaciones
+  produce exactamente las mismas cifras y las conclusiones estáticas quedan alineadas con las salidas.
+  Reentrenar en el run final podría mover algunos problemas límite y obligaría a reescribir las
+  conclusiones y a un segundo run para consolidarlas. La evidencia del monitoreo (pérdidas y pass@1
+  por época) ya está en el historial y en la figura.
+- **Descartado:** borrar o mover los adaptadores para ver el entrenamiento otra vez (más riesgo que
+  beneficio); ejecutar el run final en otra GPU (diferencias de kernels podrían cambiar veredictos
+  limítrofes); escribir las conclusiones con cifras provisionales.
+- **Consecuencia:** el notebook ejecutado muestra “Adaptador encontrado” en la sección 8 en lugar de
+  las líneas de cada época, pero conserva la tabla y la figura del historial. El zip incluye los dos
+  adaptadores; un evaluador que corra el notebook sin ellos entrenará desde cero y obtendrá cifras
+  parecidas, no necesariamente idénticas.
+
 ---
 
 ## 4. Reglas duras del proyecto (no negociables)
@@ -675,20 +711,24 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
 - [x] Fase 2: Librerías (corrida en Colab T4; bf16 por emulación corregido en D-031).
 - [x] Fase 3: Carga del dataset y exploración (corrida en Colab; análisis ampliado con 6 figuras,
       vocabulario, calidad y KS; conclusiones en markdown, D-030 y D-033; pendiente re-ejecutar).
-- [ ] Fase 4: Prompts y preprocesamiento (sección 4 escrita con formato `### Signature`, target
-      completo + EOS y máscara `-100`; D-034 y D-035; corrida en Colab, pendiente revisar salidas).
-- [ ] Fase 5: Particiones (sección 5 escrita con roles, 50 de monitoreo con semilla y presupuesto
-      de épocas; D-036; pendiente correr en Colab).
-- [ ] Fase 6: Evaluación pass@1 (sección 6 escrita con generación por lotes, extracción tolerante,
-      sandbox con timeout y JSON por problema; D-037 y D-042; pendiente correr en Colab).
-- [ ] Fase 7: Evaluación base (sección 7 escrita con integridad de `test`, carga en `AMP_DTYPE`,
-      prueba de formato y evaluación de los 500; D-038; pendiente correr en Colab L4).
-- [ ] Fase 8: Finetuning LoRA (sección 8 escrita con la receta de D-021, gradient checkpointing,
-      monitoreo por época, mejor adaptador e historial; D-039; pendiente correr en Colab L4).
-- [ ] Fase 9: Evaluación finetuneada (sección 9 escrita con carga de adaptadores, verificación de
-      configuración y evaluación de los 500; D-040; pendiente correr en Colab L4).
-- [ ] Fase 10: Comparación y resultados.
-- [ ] Fase 11: Conclusiones.
+- [x] Fase 4: Prompts y preprocesamiento (formato `### Signature`, target completo + EOS y máscara
+      `-100`; D-034 y D-035; corrida completa en Colab A100 80GB).
+- [x] Fase 5: Particiones (roles de los splits, 50 de monitoreo con semilla y presupuesto de épocas;
+      D-036; corrida completa en Colab A100 80GB).
+- [x] Fase 6: Evaluación pass@1 (generación por lotes, extracción tolerante, sandbox con timeout y
+      JSON por problema; D-037 y D-042; corrida completa en Colab A100 80GB).
+- [x] Fase 7: Evaluación base (integridad de `test`, carga en `AMP_DTYPE`, prueba de formato y
+      evaluación de los 500; D-038). Resultados: Qwen base 41.0 % (205/500) y SmolLM2 base
+      4.8 % (24/500).
+- [x] Fase 8: Finetuning LoRA (receta de D-021/D-039, gradient checkpointing, monitoreo por época,
+      mejor adaptador e historial; D-043). Adaptadores en Drive, mejor época 5 en los dos modelos;
+      monitoreo final 48 % (Qwen) y 32 % (SmolLM2) sobre los 50 de validación.
+- [x] Fase 9: Evaluación finetuneada (carga de adaptadores, verificación de configuración y
+      evaluación de los 500; D-040). Resultados: Qwen + LoRA 43.6 % (218/500) y SmolLM2 + LoRA
+      32.6 % (163/500).
+- [x] Fase 10: Comparación y resultados (tabla con intervalos de Wilson, barras de pass@1, motivos
+      apilados, matriz de transición y ejemplos cualitativos; D-044).
+- [x] Fase 11: Conclusiones (42–47: discusión, limitaciones y trabajo futuro).
 - [ ] Fase 12: Smoke test.
 - [ ] Fase 13: Run final y entrega.
 

@@ -82,7 +82,7 @@ solo se hacen cuando él lo pide.
   coincide con la longitud real del prompt.
 - **Estado:** escrita (D-034 y D-035). Validada en local con los 464 ejemplos de `train` y
   `validation` y los tokenizadores de las revisiones fijas: 0 diferencias de prefijo, 0 ejemplos
-  por encima de 512 y 0 fugas; pendiente de ejecutar en Colab.
+  por encima de 512 y 0 fugas. Corrida completa en Colab A100 80GB.
 
 ### Fase 5 — Particiones (train / validation / test)
 - Asignación de roles: `train` para finetuning, `validation` para monitoreo e hiperparámetros,
@@ -92,7 +92,7 @@ solo se hacen cuando él lo pide.
   de la sección 7.
 - **Estado:** escrita (D-036). Roles en tabla, 24 lotes por época, 50 de monitoreo elegidos con
   `SEED = 42` (ids 511–600, 0 repetidos con `train`) y presupuesto de 33,984 / 40,201 tokens por
-  época; pendiente de ejecutar en Colab.
+  época. Corrida completa en Colab A100 80GB.
 
 ### Fase 6 — Implementación de la evaluación pass@1
 - Extracción de código generado (bloques markdown o texto plano).
@@ -105,16 +105,18 @@ solo se hacen cuando él lo pide.
   escritas a mano producen resultados coherentes (D-036: sin modelo diminuto).
 - **Estado:** escrita (D-037 y D-042). `generar_soluciones`, `extraer_codigo`, `ejecutar_solucion` y
   `evaluar_pass1`; seis pruebas del sandbox superadas en local (correcta, incorrecta, bucle
-  infinito, sintaxis, vacía y orden con setup) y cortes en encabezados posteriores; pendiente de
-  ejecutar en Colab.
+  infinito, sintaxis, vacía y orden con setup) y cortes en encabezados posteriores. Corrida completa
+  en Colab A100 80GB.
 
 ### Fase 7 — Evaluación de los modelos base (zero-shot)
 - Carga de Qwen2.5-1.5B y SmolLM2-1.7B base, uno a la vez.
 - Evaluación de los 500 problemas de `test` con la misma configuración de generación.
 - Guardado de pass@1 y generaciones en Drive/resultados.
 - **Lista cuando:** existen los dos pass@1 base y se liberó la GPU entre modelos.
-- **Estado:** escrita (D-038). Verificación de `test`, carga en `AMP_DTYPE`, prueba de formato con
-  cuatro problemas y evaluación de los 500; pendiente correr en Colab L4.
+- **Estado:** completada (D-038). Verificación de `test` (500 problemas, 0 solapamientos, 3 asserts
+  y 1 `test_setup_code`), carga en `AMP_DTYPE`, prueba de formato y evaluación de los 500 en Colab
+  A100 80GB. Resultados: Qwen base 41.0 % (205/500, 583.6 s de generación) y SmolLM2 base 4.8 %
+  (24/500, 638.4 s).
 
 ### Fase 8 — Finetuning con LoRA
 - `LoraConfig(r=16, alpha=16, dropout=0.05, target_modules=["q_proj","k_proj","v_proj","o_proj"])`.
@@ -123,10 +125,12 @@ solo se hacen cuando él lo pide.
 - Guardado del mejor adaptador de cada modelo en Drive; liberar GPU entre ambos.
 - **Lista cuando:** existen `checkpoint_qwen2.5_1.5b_lora/` y `checkpoint_smollm2_1.7b_lora/`
   con sus tokenizadores y el historial de entrenamiento.
-- **Estado:** escrita (D-039 y D-043). Receta de D-021 con fp32 + autocast, gradient checkpointing, 5
-  épocas, monitoreo por época, mejor adaptador e historial en `RESULTADOS_DIR`. Los bloques de
-  validación se arman por índices porque los splits son `Dataset` de Hugging Face; probado en local
-  con 90 ejemplos de validación en 6 lotes. Pendiente correr en Colab L4.
+- **Estado:** completada (D-039 y D-043). Receta de D-021 con fp32 + autocast, gradient checkpointing,
+  5 épocas, monitoreo por época, mejor adaptador e historial en `RESULTADOS_DIR`. Los bloques de
+  validación se arman por índices porque los splits son `Dataset` de Hugging Face. Entrenada en
+  Colab A100 80GB: Qwen 4,358,144 parámetros LoRA (0.28 %) y SmolLM2 6,291,456 (0.37 %); mejor época
+  5 en los dos modelos, con 48 % y 32 % de pass@1 de monitoreo. Adaptadores, tokenizadores e
+  historiales guardados en Drive.
 
 ### Fase 9 — Evaluación de los modelos finetuneados
 - Carga de cada modelo base + su adaptador LoRA.
@@ -134,8 +138,10 @@ solo se hacen cuando él lo pide.
   sección 7.
 - Guardado de pass@1 y generaciones.
 - **Lista cuando:** existen los dos pass@1 finetuneados y se liberó la GPU entre modelos.
-- **Estado:** escrita (D-040). Carga de cada adaptador sobre su base, verificación de configuración
-  y evaluación de los 500 con el mismo `evaluar_pass1`; pendiente correr en Colab L4.
+- **Estado:** completada (D-040). Carga de cada adaptador sobre su base, verificación de configuración
+  (r=16, alpha=16, dropout 0.05, q/k/v/o) y evaluación de los 500 con el mismo `evaluar_pass1` en
+  Colab A100 80GB. Resultados: Qwen + LoRA 43.6 % (218/500, 372.4 s de generación) y SmolLM2 + LoRA
+  32.6 % (163/500, 519.4 s).
 
 ### Fase 10 — Comparación y resultados
 - Tabla de las cuatro configuraciones con pass@1 e intervalo de Wilson al 95 %.
@@ -144,11 +150,17 @@ solo se hacen cuando él lo pide.
 - Conclusión sobre cuál modelo es mejor en la tarea.
 - **Lista cuando:** la tabla, la gráfica y los ejemplos están en el notebook y la conclusión es
   coherente con los números.
+- **Estado:** escrita (D-044). Sección de 12 celdas con tabla de las cuatro configuraciones e
+  intervalos de Wilson al 95 %, barras de pass@1, motivos apilados, matriz de transición base → LoRA
+  y dos ejemplos cualitativos por modelo más un ejemplo de regresión. No vuelve a generar: usa los
+  resúmenes de las secciones 7 y 9.
 
 ### Fase 11 — Conclusiones
 - Discusión de resultados, seguimiento del entrenamiento, hiperparámetros y limitaciones.
 - Comparación con lo esperado y aprendizajes del proyecto.
 - **Lista cuando:** el notebook cierra con la discusión y no quedan celdas pendientes.
+- **Estado:** escrita. Sección 11 con las conclusiones 42–47: resultado global con intervalos de
+  Wilson, aporte del formato, selección de época, limitaciones, qué mide el pass@1 y trabajo futuro.
 
 ### Fase 12 — Smoke test en Colab T4/L4
 - Corrida completa con menos datos o menos épocas para detectar errores rápido.
