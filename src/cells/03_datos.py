@@ -684,16 +684,16 @@ print("Primer caso de prueba:", ejemplo_validacion["test_list"][0])
 # dependerá sobre todo de resolver el problema y no de entender el enunciado. Segundo, el nombre
 # de la función objetivo solo aparece en 13 de los 374 enunciados (3.5 %), aunque los `assert` la
 # llaman por su nombre; sin la firma en el prompt, el modelo tendría que adivinarlo y el pass@1
-# caería por una razón que no es de programación. Por eso D-018 incluye el nombre y la firma, y
-# solo eso, en el prompt.
+# caería por una razón que no es de programación. Por eso el prompt incluye el nombre y la firma, y
+# solo eso.
 #
 # **5. Las soluciones son cortas.** La mediana es de 145 caracteres y 5 líneas; el p95, de 412
 # caracteres y 16 líneas; la más larga llega a 908 caracteres y 29 líneas. Con estos tamaños, un
 # límite de 512 tokens para el target y de 512 tokens nuevos al generar deja margen de sobra: el
 # p95 queda muy por debajo del límite y solo la cola se le acerca. Si el límite bajara a 256, las
 # soluciones del extremo podrían quedar truncadas y el problema se contaría como incorrecto por el
-# recorte y no por el modelo. Ese es el argumento de D-019, y el conteo exacto en tokens se
-# confirma en la sección 4 con cada tokenizador.
+# recorte y no por el modelo. Ese es el argumento para fijar ese límite, y el conteo exacto en tokens
+# se confirma en la sección 4 con cada tokenizador.
 #
 # **6. Qué tiene que generar el modelo.** De las 374 soluciones de `train`, 360 son una sola
 # función, 14 tienen más de una y 87 traen imports; 2 declaran clases. Además, 23 soluciones son
@@ -716,7 +716,7 @@ print("Primer caso de prueba:", ejemplo_validacion["test_list"][0])
 # obligan a ejecutar el código y comparar estructuras, no texto. Por eso la verificación de la
 # sección 6 corre el código generado en un subproceso y no intenta analizarlo estáticamente.
 # Además, el único problema con `test_setup_code` confirma que el código de preparación tiene que
-# ejecutarse antes de los `assert`, y en el orden que fija D-020.
+# ejecutarse antes de los `assert`, y en ese orden.
 #
 # **9. Riesgos que deja la exploración.** El primero es el tamaño: la solución más larga (908
 # caracteres) es 6.3 veces la mediana de 145, así que cualquier límite de generación se define por
@@ -731,7 +731,7 @@ print("Primer caso de prueba:", ejemplo_validacion["test_list"][0])
 # tokens: eso se mide en la sección 4 con cada tokenizador, porque depende del modelo. No medimos
 # dificultad ni calidad de las soluciones, solo su forma. `validation` tiene 90 ejemplos,
 # suficiente para comparar distribuciones gruesas pero no para detectar diferencias pequeñas. Y
-# `test` no se analizó a propósito (D-030): solo se contaron sus problemas y se revisaron sus
+# `test` no se analizó a propósito: solo se contaron sus problemas y se revisaron sus
 # identificadores.
 #
 # Con esto la sección 4 puede definir el prompt y el target con números en la mano: el formato de

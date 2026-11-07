@@ -9,7 +9,8 @@
 # El prompt lleva el enunciado y la firma de la función objetivo. Incluimos la firma porque los
 # `assert` llaman a la función por su nombre y el enunciado solo lo menciona en 13 de los 374
 # problemas; sin ella, el modelo tendría que adivinarlo. No incluimos el cuerpo de la solución, ni
-# los helpers, ni los `assert`, ni el `test_setup_code` (D-018).
+# los helpers, ni los `assert`, ni el `test_setup_code`: el prompt solo dice qué hay que resolver y
+# cómo se llama la función.
 #
 # El formato queda así:
 #
@@ -112,7 +113,7 @@ for ident in [602, 606, 601]:
 
 # %% [markdown]
 # Cargamos los dos tokenizadores con su revisión fija. Si no traen token de relleno les ponemos el
-# EOS, y los dejamos con padding a la izquierda porque así se genera en la evaluación (D-019). En
+# EOS, y los dejamos con padding a la izquierda porque así se genera en la evaluación. En
 # entrenamiento los lotes se arman a mano con relleno a la derecha.
 
 # %%
@@ -466,7 +467,7 @@ for ident, linea in lineas_repetidas:
 # diferencia se paga solo dentro del lote y no se reserva `MAX_LEN` para todos: en entrenamiento cada
 # lote se estira hasta su ejemplo más largo, y el relleno queda con máscara 0 y `-100` en los
 # `labels`. En generación se usa padding a la izquierda, que es lo que permite que los 16 prompts del
-# lote terminen en la misma columna (D-019).
+# lote terminen en la misma columna.
 #
 # Con esto el pipeline queda definido: `construir_prompt` y `construir_solucion` arman los textos,
 # `tokenizar_ejemplo` aplica la máscara y `preparar_lote` construye los tensores. La sección 5 lo
