@@ -634,6 +634,22 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
   resultados del run en L4. Las referencias en `AGENTS.md` y `FASES.md` se actualizaron a
   “conclusiones de la sección” o “1–N”.
 
+### D-048 · 2026-11-12 · Cierre de portada, títulos y warnings
+- **Decisión:** la portada identifica al Equipo 4 con los cinco integrantes; MBPP se expande como
+  Mostly Basic Python Problems; los títulos de conclusiones de las secciones 3–10 usan la forma
+  “Conclusiones de …” y ya no “Lo que nos deja …”; el filtro de warnings se ejecuta antes de los
+  imports y se añade `transformers.logging.set_verbosity_error()` para que no aparezca el aviso de
+  `torch_dtype`. Se conservan los mensajes simplificados de GPU y `HF_TOKEN` que dejó Jean.
+- **Motivo:** son los ajustes de revisión final del autor: completar la autoría, explicar la sigla,
+  uniformar los títulos y evitar avisos innecesarios sin cambiar la lógica del notebook. No se oculta
+  el conflicto de `pip` porque es un aviso del entorno de Colab y ocultarlo podría esconder errores
+  reales de instalación.
+- **Descartado:** dejar los títulos viejos o los typos; cambiar `torch_dtype` por `dtype` (habría
+  obligado a subir el mínimo de `transformers` y a otra validación); ocultar todo el stderr de `pip`.
+- **Consecuencia:** los cambios de código son mínimos pero obligan a una corrida final para refrescar
+  las salidas de la sección 2 y del modelo. Después del `Run All` se descarga el ejecutado, se
+  verifican los pass@1 y se arma la entrega.
+
 ---
 
 ## 4. Reglas duras del proyecto (no negociables)
