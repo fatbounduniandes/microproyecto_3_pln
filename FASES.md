@@ -159,7 +159,7 @@ solo se hacen cuando él lo pide.
 - Discusión de resultados, seguimiento del entrenamiento, hiperparámetros y limitaciones.
 - Comparación con lo esperado y aprendizajes del proyecto.
 - **Lista cuando:** el notebook cierra con la discusión y no quedan celdas pendientes.
-- **Estado:** escrita. Sección 11 con las conclusiones 42–47: resultado global con intervalos de
+- **Estado:** escrita. Sección 11 con las conclusiones 1–6: resultado global con intervalos de
   Wilson, aporte del formato, selección de época, limitaciones, qué mide el pass@1 y trabajo futuro.
 
 ### Fase 12 — Smoke test en Colab T4/L4

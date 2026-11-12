@@ -8,7 +8,7 @@ silencio: se marca como reemplazada y se agrega una nueva.
 - **Curso:** Modelos Avanzados para el Procesamiento de Lenguaje Natural (MAPLN) — Maestría en IA.
 - **Repositorio:** `fatbounduniandes/microproyecto_3_pln` (público).
 - **Rama principal:** `main`.
-- **Última actualización de esta bitácora:** 2026-11-07.
+- **Última actualización de esta bitácora:** 2026-11-12.
 
 ---
 
@@ -604,8 +604,8 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
 ### D-046 · 2026-11-07 · Run final en L4 y sincronización de markdown
 - **Decisión:** el run final se hizo en una L4 (22 GB, bf16) con los dos adaptadores ya entrenados. Los
   resultados fueron Qwen base 41.2 % (206/500), Qwen + LoRA 43.6 % (218/500), SmolLM2 base 4.6 %
-  (23/500) y SmolLM2 + LoRA 31.6 % (158/500). Las conclusiones 26–43, el README y esta bitácora se
-  actualizaron a esas cifras. Como el cambio fue solo de markdown, el notebook ejecutado se
+  (23/500) y SmolLM2 + LoRA 31.6 % (158/500). Las conclusiones de las secciones 7–11, el README y
+  esta bitácora se actualizaron a esas cifras. Como el cambio fue solo de markdown, el notebook ejecutado se
   sincronizó celda por celda con `notebook.ipynb` conservando los códigos y las salidas del run.
 - **Motivo:** la corrida en L4 terminó con 0 errores y era el entorno disponible. Las diferencias con
   la corrida previa en A100 (205/218/24/163) son de uno a cinco problemas y provienen de los kernels
@@ -619,6 +619,20 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
   los 72 códigos y sus salidas del run en L4, y su markdown coincide con `src/cells/`. Si se vuelve a
   correr en otra GPU, las cifras pueden moverse de nuevo y habría que repetir esta sincronización. La
   entrega usa 41.2 %, 43.6 %, 4.6 % y 31.6 %.
+
+### D-047 · 2026-11-12 · Conclusiones numeradas por sección
+- **Decisión:** los hallazgos numerados de cada sección vuelven a empezar en 1. La sección 3 usa 1–8,
+  la 4 usa 1–6, la 5 usa 1–5, la 6 usa 1–4, las secciones 7–10 usan 1–4 y la 11 usa 1–6. El texto no
+  cambia; solo los números de los encabezados markdown.
+- **Motivo:** la numeración global 3–47 hacía que la sección 11 empezara en 42 y parecía una
+  numeración de capítulos. Cada sección se lee mejor con su propia secuencia 1, 2, 3. No hay
+  referencias cruzadas por número, así que el cambio no rompe ninguna explicación.
+- **Descartado:** mantener la numeración global 3–47 (confusa para el lector); renumerar solo la
+  sección 11 (inconsistente con las demás).
+- **Consecuencia:** 45 encabezados markdown renumerados; las celdas de código, las salidas, las tablas
+  y las figuras no cambian. El notebook ejecutado se sincronizó solo en markdown y conserva los
+  resultados del run en L4. Las referencias en `AGENTS.md` y `FASES.md` se actualizaron a
+  “conclusiones de la sección” o “1–N”.
 
 ---
 
@@ -749,7 +763,7 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
       SmolLM2 + LoRA 31.6 % (158/500).
 - [x] Fase 10: Comparación y resultados (tabla con intervalos de Wilson, barras de pass@1, motivos
       apilados, matriz de transición y ejemplos cualitativos; D-044).
-- [x] Fase 11: Conclusiones (42–47: discusión, limitaciones y trabajo futuro).
+- [x] Fase 11: Conclusiones (1–6 dentro de la sección 11: discusión, limitaciones y trabajo futuro).
 - [x] Fase 12: Smoke test (run completo en L4, 0 errores; D-046).
 - [ ] Fase 13: Entrega (notebook ejecutado listo; pendiente el `.zip` y la prueba en incógnito).
 
