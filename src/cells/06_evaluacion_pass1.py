@@ -373,7 +373,7 @@ print()
 print("Pruebas superadas:", superadas, "de", len(filas_pruebas))
 
 # %% [markdown]
-# ### Lo que nos deja la evaluación pass@1
+# ### Conclusiones de la implementación pass@1
 #
 # **1. Un solo protocolo para las cuatro configuraciones.** `evaluar_pass1` recibe el modelo y su
 # tokenizador y siempre usa el mismo `construir_prompt`, el mismo `max_new_tokens`, la misma

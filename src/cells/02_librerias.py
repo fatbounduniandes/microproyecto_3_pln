@@ -20,6 +20,10 @@
 # modelo. `pandas` y `scipy` son solo para las tablas y la comparación de distribuciones.
 
 # %%
+import warnings
+
+warnings.filterwarnings("ignore")
+
 import ast
 import gc
 import hashlib
@@ -31,7 +35,6 @@ import subprocess
 import sys
 import tempfile
 import time
-import warnings
 
 os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
 
@@ -50,7 +53,7 @@ from peft import LoraConfig, PeftModel, get_peft_model
 from scipy.stats import ks_2samp
 from transformers import AutoModelForCausalLM, AutoTokenizer, get_cosine_schedule_with_warmup
 
-warnings.filterwarnings("ignore")
+transformers.logging.set_verbosity_error()
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 
 print("Entorno cargado")
@@ -103,7 +106,7 @@ if DEVICE == "cuda":
     print("VRAM:", round(props.total_memory / 1024 ** 3, 1), "GB")
     print("Compute capability:", props.major, ".", props.minor)
 else:
-    print("No se detectó GPU: el entrenamiento en CPU va a ser muy lento")
+    print("Sin GPU")
 
 print("Precisión mixta:", NOMBRE_AMP)
 print("GradScaler:", USE_SCALER)
@@ -113,7 +116,7 @@ print("Batch de evaluación:", BATCH_SIZE)
 
 # %% [markdown]
 # Montamos Drive y creamos las carpetas donde quedan los adaptadores y los resultados. Si la
-# sesión de Colab se cae, volvemos a ejecutar y lo encontramos todo ahí.
+# sesión de Colab se reinicia, volvemos a ejecutar y todo está en Drive.
 
 # %%
 drive.mount("/content/drive")
@@ -134,7 +137,7 @@ print("Adaptador de SmolLM2:", CHECKPOINT_SMOL)
 if "HF_TOKEN" in os.environ:
     print("HF_TOKEN: configurado")
 else:
-    print("HF_TOKEN: no está en el entorno, las descargas públicas funcionan igual")
+    print("HF_TOKEN: no está configurado")
 
 # %% [markdown]
 # Fijamos la semilla para que los resultados sean reproducibles y definimos la función que libera

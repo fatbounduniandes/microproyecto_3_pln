@@ -144,7 +144,7 @@ print("  monitoreo:", contar_estructura(EJEMPLOS_MONITOREO))
 print("  validación:", contar_estructura(EJEMPLOS_VALIDACION))
 
 # %% [markdown]
-# ### Lo que nos deja la partición
+# ### Conclusiones de las particiones
 #
 # **1. Tres conjuntos con roles separados.** El dataset trae 374 problemas de entrenamiento, 90 de
 # validación y 500 de prueba. `train` solo se usa para el finetuning; `validation` para la pérdida y

@@ -103,7 +103,7 @@ tabla_lora = pd.DataFrame(filas_lora)
 print(tabla_lora.to_string(index=False))
 
 # %% [markdown]
-# ### Lo que nos deja la evaluación finetuneada
+# ### Conclusiones de la evaluación finetuneada
 #
 # **1. Los adaptadores cargados son los que entrenamos.** En los dos casos la verificación leyó
 # r=16, alpha=16, dropout 0.05 y los módulos q, k, v y o. Qwen tiene 4,358,144 parámetros LoRA y

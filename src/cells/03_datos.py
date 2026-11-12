@@ -665,7 +665,7 @@ print()
 print("Primer caso de prueba:", ejemplo_validacion["test_list"][0])
 
 # %% [markdown]
-# ### Lo que nos deja la exploración
+# ### Conclusiones de la exploración
 #
 #
 # **1.  `train` y `validation` ** El enunciado promedia 78.4 caracteres en `train` y

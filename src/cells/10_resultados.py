@@ -229,7 +229,7 @@ for nombre, resumen_base, resumen_lora in comparaciones:
         print(recortar_codigo(codigo_de(resumen_lora, ident)))
 
 # %% [markdown]
-# ### Lo que muestra la comparación
+# ### Conclusiones de la comparación
 #
 # **1. El efecto de LoRA depende del modelo.** En Qwen el pass@1 pasó de 41.2 % a 43.6 % (+2.4 pp,
 # +5.8 % relativo) y en SmolLM2 de 4.6 % a 31.6 % (+27.0 pp). Los intervalos de Wilson al 95 % de

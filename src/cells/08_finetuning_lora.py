@@ -372,7 +372,7 @@ else:
     print("Sin historial: no hay curvas para graficar")
 
 # %% [markdown]
-# ### Lo que nos deja el finetuning
+# ### Conclusiones del finetuning
 #
 # **1. Una receta pequeña y explícita.** Qwen2.5-1.5B quedó con 4,358,144 parámetros entrenables
 # (0.28 % del total) y SmolLM2-1.7B con 6,291,456 (0.37 %). Cada época son 24 lotes de 16 ejemplos,

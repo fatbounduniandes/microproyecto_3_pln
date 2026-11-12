@@ -217,7 +217,7 @@ tabla_base = pd.DataFrame(filas_base)
 print(tabla_base.to_string(index=False))
 
 # %% [markdown]
-# ### Lo que nos deja la evaluación base
+# ### Conclusiones de la evaluación base
 #
 # **1. Qwen2.5-1.5B ya es un baseline fuerte.** Acertó 206 de los 500 problemas (41.2 %), con
 # 579.6 s de generación y 29.1 s de ejecución. Sin ningún entrenamiento sobre MBPP, el modelo

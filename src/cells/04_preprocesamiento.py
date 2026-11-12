@@ -431,7 +431,7 @@ for ident, linea in lineas_repetidas:
     print("  task_id", ident, "->", repr(linea))
 
 # %% [markdown]
-# ### Lo que nos deja el preprocesamiento
+# ### Conclusiones del preprocesamiento
 #
 # **1. El prompt es una parte pequeña del ejemplo.** Con este formato, el prompt promedia 32.7
 # tokens con Qwen y 40.6 con SmolLM2 en `train`, y 32.4 y 40.2 en `validation`. El máximo es de 68 y

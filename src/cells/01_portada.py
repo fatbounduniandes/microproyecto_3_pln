@@ -2,7 +2,9 @@
 # # Microproyecto 3: Generación condicional de código con LLMs
 #
 # **Curso:** Modelos Avanzados para el Procesamiento de Lenguaje Natural
-# **Integrante:** Jean Pierre Betancourt Padilla
+# **Equipo 4**
+# **Integrantes:** Juan Sebastián Páez Cortés, Julian David Parada Galvis, Luis Carlos Prada Socha,
+# Jean Pierre Betancourt Padilla, Olga Lucía Osorio Botero
 # **Fecha:** noviembre de 2026
 #
 # ---
@@ -12,9 +14,9 @@
 # ### Resumen
 #
 # En este microproyecto ajustamos dos modelos de lenguaje de familias distintas para generar
-# funciones en Python a partir de un enunciado en lenguaje natural. Trabajamos con MBPP, un corpus
-# de problemas básicos de programación que trae, para cada problema, el enunciado, una solución de
-# referencia y los `assert` con los que se verifica.
+# funciones en Python a partir de un enunciado en lenguaje natural. Trabajamos con MBPP (Mostly
+# Basic Python Problems), un corpus de problemas básicos de programación que trae, para cada
+# problema, el enunciado, una solución de referencia y los `assert` con los que se verifica.
 #
 # Comparamos cuatro configuraciones para medir cuánto aporta el finetuning con LoRA y qué familia
 # de modelo resuelve mejor la tarea:
@@ -44,14 +46,12 @@
 # decodificación greedy, y usamos el mismo prompt y el mismo `max_new_tokens` en la versión base y
 # en la finetuneada de cada modelo.
 #
-# El código generado se ejecuta en un subproceso aparte con un tiempo límite, nunca dentro del
-# notebook, porque el modelo puede equivocarse y colgar la sesión.
-#
 # ### Entorno
 #
 # El notebook se escribió en WSL y se ejecuta completo en Google Colab con GPU L4 o A100. En L4 y
 # A100 usamos bf16; si la sesión cae en una T4, pasamos a fp16 con `GradScaler` sin cambiar código.
-# Los adaptadores LoRA y los resultados quedan en Google Drive para sobrevivir a una desconexión.
+# Los adaptadores LoRA y los resultados quedan en Google Drive para la persistencia ante una
+# desconexión.
 #
 # Todo el pipeline es reproducible: fijamos la semilla, la revisión del dataset y las de los dos
 # modelos, de modo que dos ejecuciones parten de los mismos datos y de los mismos pesos. El notebook
