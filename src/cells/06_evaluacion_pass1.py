@@ -375,24 +375,24 @@ print("Pruebas superadas:", superadas, "de", len(filas_pruebas))
 # %% [markdown]
 # ### Lo que nos deja la evaluación pass@1
 #
-# **22. Un solo protocolo para las cuatro configuraciones.** `evaluar_pass1` recibe el modelo y su
+# **1. Un solo protocolo para las cuatro configuraciones.** `evaluar_pass1` recibe el modelo y su
 # tokenizador y siempre usa el mismo `construir_prompt`, el mismo `max_new_tokens`, la misma
 # decodificación greedy y el mismo sandbox. Cambiar de configuración solo cambia los pesos, no la
 # forma de evaluar. El resumen y el detalle por problema quedan en `RESULTADOS_DIR`, así que la
 # comparación de la sección 10 no necesita volver a generar.
 #
-# **23. El sandbox aguanta código malo.** Las seis pruebas se comportaron como esperábamos: la
+# **2. El sandbox aguanta código malo.** Las seis pruebas se comportaron como esperábamos: la
 # solución correcta pasó, la incorrecta falló por `AssertionError`, el bucle infinito se cortó con el
 # límite de 5 segundos, el error de sintaxis se reportó como tal, la solución vacía no llegó a
 # ejecutarse y la que usa el `test_setup_code` pasó solo con el orden código → setup → asserts.
 # Ningún caso tumbó el notebook.
 #
-# **24. La extracción no arregla el código.** `extraer_codigo` quita vallas markdown, encabezados
+# **3. La extracción no arregla el código.** `extraer_codigo` quita vallas markdown, encabezados
 # repetidos y prosa, y conserva el código válido que empieza con una asignación, un import o una
 # clase. Pero si el modelo no escribe Python válido, la solución falla. Eso es correcto: el pass@1
 # mide lo que produce el modelo, no lo que nosotros reconstruimos.
 #
-# **25. Lo que falta probar.** La generación real se estrena en la sección 7 con Qwen base. Ahí se
+# **4. Lo que falta probar.** La generación real se estrena en la sección 7 con Qwen base. Ahí se
 # revisa el primer lote y se confirma que el modelo no continúa el bloque `### Signature` en vez de
 # empezar la solución. El sandbox ya está probado y no depende de la GPU; la generación por lotes
 # depende del modelo y se verifica con el primero.

@@ -374,23 +374,23 @@ else:
 # %% [markdown]
 # ### Lo que nos deja el finetuning
 #
-# **30. Una receta pequeña y explícita.** Qwen2.5-1.5B quedó con 4,358,144 parámetros entrenables
+# **1. Una receta pequeña y explícita.** Qwen2.5-1.5B quedó con 4,358,144 parámetros entrenables
 # (0.28 % del total) y SmolLM2-1.7B con 6,291,456 (0.37 %). Cada época son 24 lotes de 16 ejemplos,
 # es decir, 120 pasos de optimización en las cinco épocas, con 6 pasos de warmup. Es un entrenamiento
 # corto: el costo del proyecto está en generar, no en actualizar los adaptadores.
 #
-# **31. En Qwen la pérdida se estancó antes que el pass@1.** La pérdida de entrenamiento bajó de
+# **2. En Qwen la pérdida se estancó antes que el pass@1.** La pérdida de entrenamiento bajó de
 # 0.7184 a 0.4252 y la de validación de 0.5361 a 0.5037, con su mínimo en la época 4 (0.5035). El
 # pass@1 de monitoreo fue 46 %, 42 %, 44 %, 46 % y 48 %: la mejor época fue la 5 por pass@1, aunque
 # la pérdida ya no mejoraba. Si hubiéramos elegido por pérdida, nos habríamos quedado con la 4 y con
 # dos puntos menos de pass@1.
 #
-# **32. En SmolLM2 el desempate importó.** La pérdida de entrenamiento bajó de 0.7038 a 0.4102 y la
+# **3. En SmolLM2 el desempate importó.** La pérdida de entrenamiento bajó de 0.7038 a 0.4102 y la
 # de validación de 0.5556 a 0.4754. El pass@1 de monitoreo fue 28 %, 32 %, 30 %, 28 % y 32 %: las
 # épocas 2 y 5 empataron en aciertos, y ganó la 5 por menor pérdida de validación (0.4754 contra
 # 0.4899). La regla de desempate no fue decorativa: decidió qué adaptador se guarda.
 #
-# **33. La selección se hizo solo con validación.** `test` no participó en la elección de época ni de
+# **4. La selección se hizo solo con validación.** `test` no participó en la elección de época ni de
 # hiperparámetros. En cada mejora se guardaron el adaptador, el tokenizador y el historial, y la
 # carpeta de Drive permite reanudar sin volver a entrenar. Con 50 problemas de monitoreo cada acierto
 # vale dos puntos porcentuales, así que las diferencias de uno o dos aciertos deben leerse con

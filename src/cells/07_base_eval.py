@@ -219,24 +219,24 @@ print(tabla_base.to_string(index=False))
 # %% [markdown]
 # ### Lo que nos deja la evaluación base
 #
-# **26. Qwen2.5-1.5B ya es un baseline fuerte.** Acertó 206 de los 500 problemas (41.2 %), con
+# **1. Qwen2.5-1.5B ya es un baseline fuerte.** Acertó 206 de los 500 problemas (41.2 %), con
 # 579.6 s de generación y 29.1 s de ejecución. Sin ningún entrenamiento sobre MBPP, el modelo
 # resuelve cuatro de cada diez problemas, así que el margen de LoRA en este modelo es real pero
 # acotado: para subir hay que mejorar código que ya es válido en la mayoría de los casos.
 #
-# **27. SmolLM2-1.7B casi no sigue el formato.** Acertó 23 de 500 (4.6 %), con 629.2 s de generación
+# **2. SmolLM2-1.7B casi no sigue el formato.** Acertó 23 de 500 (4.6 %), con 629.2 s de generación
 # y 29.1 s de ejecución. En la prueba de cuatro problemas, 3 de 4 empiezan con código, 2 de 4 repiten
 # `### Problem` o `### Signature` y 3 de 4 producen Python válido; sus salidas miden entre 1,010 y
 # 1,486 caracteres, frente a 41–694 en Qwen. El modelo sabe escribir funciones, pero se enreda con el
 # formato y con el momento de terminar.
 #
-# **28. El perfil de fallo es distinto en cada modelo.** En Qwen hay 206 aciertos, 235 fallos por
+# **3. El perfil de fallo es distinto en cada modelo.** En Qwen hay 206 aciertos, 235 fallos por
 # `assert` (47.0 %), 50 por error de ejecución (10.0 %) y solo 9 por sintaxis (1.8 %). En SmolLM2,
 # 397 de los 500 fallos son de sintaxis (79.4 %), seguidos de 40 errores (8.0 %), 36 `assert` (7.2 %)
 # y 4 respuestas vacías (0.8 %). Qwen falla sobre todo resolviendo; SmolLM2 falla sobre todo
 # escribiendo.
 #
-# **29. Eso anticipa dónde puede aportar LoRA.** En SmolLM2 hay un problema de forma que el
+# **4. Eso anticipa dónde puede aportar LoRA.** En SmolLM2 hay un problema de forma que el
 # finetuning puede corregir con pocos ejemplos: si el modelo aprende a escribir una función válida y
 # a detenerse, el pass@1 debería subir mucho. En Qwen el formato ya está resuelto y la mejora tiene
 # que venir de la calidad de la solución, que es más difícil de mover con 374 ejemplos. La

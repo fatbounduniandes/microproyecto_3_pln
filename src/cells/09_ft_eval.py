@@ -105,24 +105,24 @@ print(tabla_lora.to_string(index=False))
 # %% [markdown]
 # ### Lo que nos deja la evaluación finetuneada
 #
-# **34. Los adaptadores cargados son los que entrenamos.** En los dos casos la verificación leyó
+# **1. Los adaptadores cargados son los que entrenamos.** En los dos casos la verificación leyó
 # r=16, alpha=16, dropout 0.05 y los módulos q, k, v y o. Qwen tiene 4,358,144 parámetros LoRA y
 # SmolLM2 6,291,456, los mismos del entrenamiento, y las dos carpetas incluyen `adapter_config.json`,
 # `adapter_model.safetensors` y el tokenizador. La carga se hizo sobre el mismo modelo base y la
 # revisión fija, y la evaluación usó el mismo `evaluar_pass1` de las secciones 6 y 7.
 #
-# **35. Qwen + LoRA sube de 41.2 % a 43.6 %.** Acertó 218 de 500, doce problemas más que la base.
+# **2. Qwen + LoRA sube de 41.2 % a 43.6 %.** Acertó 218 de 500, doce problemas más que la base.
 # Los motivos quedaron en 241 `assert`, 37 errores, 4 de sintaxis y ningún timeout. La ganancia es
 # moderada y coherente con lo que anticipaba la sección 7: el formato ya estaba resuelto y LoRA tenía
 # que mejorar la solución, no solo la forma. Con 500 problemas, 12 aciertos son un +2.4 pp; en la
 # sección 10 los intervalos de Wilson muestran que esa diferencia se solapa con el ruido de muestreo.
 #
-# **36. SmolLM2 + LoRA sube de 4.6 % a 31.6 %.** Acertó 158 de 500, 135 problemas más que la base.
+# **3. SmolLM2 + LoRA sube de 4.6 % a 31.6 %.** Acertó 158 de 500, 135 problemas más que la base.
 # Lo más elocuente es el cambio de motivo: los fallos de sintaxis pasaron de 397 a 5 y los `assert`
 # subieron de 36 a 291. El adaptador no convirtió al modelo en un gran programador, pero sí le enseñó
 # a escribir una función ejecutable y a detenerse; ahora la mayoría de los fallos son de lógica.
 #
-# **37. La mejora se mide con el mismo protocolo.** El prompt, `max_new_tokens`, la decodificación
+# **4. La mejora se mide con el mismo protocolo.** El prompt, `max_new_tokens`, la decodificación
 # greedy y el sandbox son idénticos a los de la base, así que la diferencia entre 41.2 % y 43.6 %, y
 # entre 4.6 % y 31.6 %, no viene de un cambio de evaluación: en SmolLM2 es clara y en Qwen queda
 # dentro del ruido. La generación bajó de 579.6 a 414.4 s en Qwen y de 629.2 a 475.5 s en SmolLM2, una

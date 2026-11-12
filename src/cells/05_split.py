@@ -146,28 +146,28 @@ print("  validación:", contar_estructura(EJEMPLOS_VALIDACION))
 # %% [markdown]
 # ### Lo que nos deja la partición
 #
-# **17. Tres conjuntos con roles separados.** El dataset trae 374 problemas de entrenamiento, 90 de
+# **1. Tres conjuntos con roles separados.** El dataset trae 374 problemas de entrenamiento, 90 de
 # validación y 500 de prueba. `train` solo se usa para el finetuning; `validation` para la pérdida y
 # el pass@1 de monitoreo; `test` queda intacto hasta la sección 7. La tabla de roles deja esa
 # separación escrita en el notebook y no solo en la cabeza de quien lo corre.
 #
-# **18. Una época son 24 pasos.** Con batch de 16, los 374 ejemplos dan 23 lotes completos y uno de
+# **2. Una época son 24 pasos.** Con batch de 16, los 374 ejemplos dan 23 lotes completos y uno de
 # 6. Cinco épocas son 120 pasos de optimización, así que el bucle de entrenamiento es corto y se
 # puede seguir época por época sin problema.
 #
-# **19. El entrenamiento no es el costo.** Una época recorre 33,984 tokens con Qwen y 40,201 con
+# **3. El entrenamiento no es el costo.** Una época recorre 33,984 tokens con Qwen y 40,201 con
 # SmolLM2; cinco épocas llegan a 169,920 y 201,005. Son cifras pequeñas para una GPU de 24 GB. El
 # costo real está en generar 500 soluciones por cada una de las cuatro configuraciones, que es lo que
 # justifica la generación por lotes y el recorte del prompt.
 #
-# **20. Los 50 de monitoreo representan al conjunto.** Salieron 50 `task_id` distintos entre 511 y
+# **4. Los 50 de monitoreo representan al conjunto.** Salieron 50 `task_id` distintos entre 511 y
 # 600, ninguno de entrenamiento. En tokens son un poco más largos que los 90 (mediana 85 contra 77,
 # media 100.8 contra 92.7), pero el máximo es el mismo (236). La estructura también se parece: 4 de
 # 50 tienen más de una función (8 %) contra 6 de 90 (6.7 %), y 7 de 50 traen imports (14 %) contra
 # 13 de 90 (14.4 %). Con esa muestra el pass@1 de monitoreo sirve para comparar épocas, no para
 # sacar conclusiones finas.
 #
-# **21. Qué se decide con esto.** La época y los hiperparámetros se eligen con la pérdida de los 90 y
+# **5. Qué se decide con esto.** La época y los hiperparámetros se eligen con la pérdida de los 90 y
 # el pass@1 de los 50; `test` no participa. Como cada acierto en 50 mueve el pass@1 dos puntos
 # porcentuales, solo miramos diferencias de varios problemas y desempatamos por la pérdida, como
 # estaba previsto. La lista de `test` se arma en la sección 7, cuando ya no hay nada que elegir.

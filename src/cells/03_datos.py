@@ -668,13 +668,13 @@ print("Primer caso de prueba:", ejemplo_validacion["test_list"][0])
 # ### Lo que nos deja la exploración
 #
 #
-# **3.  `train` y `validation` ** El enunciado promedia 78.4 caracteres en `train` y
+# **1.  `train` y `validation` ** El enunciado promedia 78.4 caracteres en `train` y
 # 77.9 en `validation`, con p95 de 113 y 119. La solución promedia 178.4 y 182.4 caracteres, con
 # p95 de 412 y 447. Con 90 ejemplos la prueba tiene poca potencia, así que la lectura correcta es que no hay
 # evidencia suficiente para distinguir los splits, no que sean idénticos. Para lo que necesitamos
 # alcanza: si el modelo mejora en `validation`, es razonable esperar una mejora parecida en `test`.
 #
-# **4. Los enunciados son plantillas.** De los 374 problemas, 247 empiezan literalmente con “write
+# **2. Los enunciados son plantillas.** De los 374 problemas, 247 empiezan literalmente con “write
 # a function to”, 8 con “write a function that” y 115 con “write a python function”; los 4
 # restantes son variantes menores, como un título en mayúsculas. El vocabulario es pequeño: 573
 # palabras distintas en total y 551 sin contar las vacías y las de la plantilla. Las palabras con
@@ -687,7 +687,7 @@ print("Primer caso de prueba:", ejemplo_validacion["test_list"][0])
 # caería por una razón que no es de programación. Por eso el prompt incluye el nombre y la firma, y
 # solo eso.
 #
-# **5. Las soluciones son cortas.** La mediana es de 145 caracteres y 5 líneas; el p95, de 412
+# **3. Las soluciones son cortas.** La mediana es de 145 caracteres y 5 líneas; el p95, de 412
 # caracteres y 16 líneas; la más larga llega a 908 caracteres y 29 líneas. Con estos tamaños, un
 # límite de 512 tokens para el target y de 512 tokens nuevos al generar deja margen de sobra: el
 # p95 queda muy por debajo del límite y solo la cola se le acerca. Si el límite bajara a 256, las
@@ -695,21 +695,21 @@ print("Primer caso de prueba:", ejemplo_validacion["test_list"][0])
 # recorte y no por el modelo. Ese es el argumento para fijar ese límite, y el conteo exacto en tokens
 # se confirma en la sección 4 con cada tokenizador.
 #
-# **6. Qué tiene que generar el modelo.** De las 374 soluciones de `train`, 360 son una sola
+# **4. Qué tiene que generar el modelo.** De las 374 soluciones de `train`, 360 son una sola
 # función, 14 tienen más de una y 87 traen imports; 2 declaran clases. Además, 23 soluciones son
 # recursivas, 122 usan un ciclo `for`, 32 un `while` y 165 un `if`. Esto explica por qué el target
 # es el código de referencia completo y no solo el cuerpo de la función: si entrenáramos con el
 # cuerpo, el modelo nunca aprendería a escribir los imports, las clases ni las funciones auxiliares
 # que necesitan esos problemas.
 #
-# **7. El estilo del código también importa.** 41 soluciones (11.0 %) usan tabs para indentar,
+# **5. El estilo del código también importa.** 41 soluciones (11.0 %) usan tabs para indentar,
 # ninguna usa `print(` ni `input(`, y ninguna cabe en una sola línea. El modelo puede imitar los
 # tabs, así que el ejecutor tiene que aceptarlos y el tokenizador no puede asumir espacios. Que el
 # corpus no imprima ni pida datos es una buena noticia: el código generado no debería llenar la
 # salida ni quedarse esperando entrada, aunque nada impide que lo haga y por eso se ejecuta en un
 # subproceso aparte.
 #
-# **8. Los `assert` son uniformes pero exigentes.** En `train` y `validation` hay 1392 `assert` y
+# **6. Los `assert` son uniformes pero exigentes.** En `train` y `validation` hay 1392 `assert` y
 # todos los problemas traen exactamente 3. Los valores esperados se reparten así: 948 constantes,
 # 294 listas, 93 tuplas, 36 diccionarios, 12 valores negativos, 6 conjuntos y 3 de otro tipo. Que
 # la mayoría sean constantes facilita la comparación, pero las listas, tuplas y diccionarios
@@ -718,7 +718,7 @@ print("Primer caso de prueba:", ejemplo_validacion["test_list"][0])
 # Además, el único problema con `test_setup_code` confirma que el código de preparación tiene que
 # ejecutarse antes de los `assert`, y en ese orden.
 #
-# **9. Riesgos que deja la exploración.** El primero es el tamaño: la solución más larga (908
+# **7. Riesgos que deja la exploración.** El primero es el tamaño: la solución más larga (908
 # caracteres) es 6.3 veces la mediana de 145, así que cualquier límite de generación se define por
 # la cola y no por el caso típico. El segundo son los tabs y las clases: el código generado puede
 # ser sintácticamente válido y aun así fallar al ejecutarse por indentación o por nombres que no
@@ -727,7 +727,7 @@ print("Primer caso de prueba:", ejemplo_validacion["test_list"][0])
 # cubren con el mismo diseño: límites holgados, ejecución aislada con timeout y decisiones tomadas
 # sobre el conjunto completo de validación, nunca sobre `test`.
 #
-# **10. Limitaciones de esta exploración.** Las longitudes están en caracteres y palabras, no en
+# **8. Limitaciones de esta exploración.** Las longitudes están en caracteres y palabras, no en
 # tokens: eso se mide en la sección 4 con cada tokenizador, porque depende del modelo. No medimos
 # dificultad ni calidad de las soluciones, solo su forma. `validation` tiene 90 ejemplos,
 # suficiente para comparar distribuciones gruesas pero no para detectar diferencias pequeñas. Y

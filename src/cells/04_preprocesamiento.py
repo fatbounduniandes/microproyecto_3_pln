@@ -433,36 +433,36 @@ for ident, linea in lineas_repetidas:
 # %% [markdown]
 # ### Lo que nos deja el preprocesamiento
 #
-# **11. El prompt es una parte pequeña del ejemplo.** Con este formato, el prompt promedia 32.7
+# **1. El prompt es una parte pequeña del ejemplo.** Con este formato, el prompt promedia 32.7
 # tokens con Qwen y 40.6 con SmolLM2 en `train`, y 32.4 y 40.2 en `validation`. El máximo es de 68 y
 # 74 tokens. Frente a una solución que promedia 58.2 y 66.9 tokens, el prompt se queda con algo más
 # de un tercio del total: 36.0 % con Qwen y 37.8 % con SmolLM2. Eso es lo que queremos, porque el
 # prompt se enmascara y solo la solución aporta a la pérdida.
 #
-# **12. La máscara cae justo en la frontera.** En el problema 602 el prompt ocupa 32 tokens y la
+# **2. La máscara cae justo en la frontera.** En el problema 602 el prompt ocupa 32 tokens y la
 # solución 43 (42 de código más el EOS). Los 32 primeros `labels` quedan en `-100` y los 43
 # restantes conservan su id, incluido el EOS. La comprobación sobre los 464 ejemplos da 0
 # diferencias: el prompt tokenizado es el prefijo exacto del texto completo con los dos
 # tokenizadores, así que la máscara por longitud no parte ningún token ni deja texto sin cubrir.
 #
-# **13. 512 tokens sobran.** El total más largo es de 346 tokens (SmolLM2, `train`) y el de Qwen
+# **3. 512 tokens sobran.** El total más largo es de 346 tokens (SmolLM2, `train`) y el de Qwen
 # llega a 321; en `validation` los máximos son 281 y 236. Ninguno de los 464 ejemplos supera el
 # límite y el margen es de 166 tokens, un 32 % de `MAX_LEN`. La mediana del total es de 78 tokens
 # con Qwen y 92 con SmolLM2, así que el límite lo fija la cola y no el caso típico. Con
 # `MAX_NEW_TOKENS = 512` pasa lo mismo: la solución más larga (308 tokens con SmolLM2) cabe entera.
 #
-# **14. La firma no siempre es el último `def`.** Las 464 firmas son Python válido y el nombre de la
+# **4. La firma no siempre es el último `def`.** Las 464 firmas son Python válido y el nombre de la
 # función objetivo siempre coincide con una función definida en el código. En 2 problemas (717 y
 # 940) la función que llaman los `assert` aparece antes de una función auxiliar, así que quedarse
 # con el último `def` habría dado una firma equivocada. Por eso el nombre se saca de los `assert` y
 # no de la posición.
 #
-# **15. No hay fuga en el prompt.** Ninguna solución completa, ningún `assert` y ningún
+# **5. No hay fuga en el prompt.** Ninguna solución completa, ningún `assert` y ningún
 # `test_setup_code` aparecen dentro del prompt de los 464 ejemplos. La única línea de código que
 # coincide es `return 20` en el problema 675, y coincide porque el enunciado dice literalmente “it
 # will return 20”: es una casualidad del texto, no una filtración de la solución.
 #
-# **16. El relleno se paga por lote, no por corpus.** En el lote de cuatro ejemplos el más largo mide
+# **6. El relleno se paga por lote, no por corpus.** En el lote de cuatro ejemplos el más largo mide
 # 183 tokens y el más corto 41, así que este último lleva 142 de relleno. Con relleno dinámico esa
 # diferencia se paga solo dentro del lote y no se reserva `MAX_LEN` para todos: en entrenamiento cada
 # lote se estira hasta su ejemplo más largo, y el relleno queda con máscara 0 y `-100` en los
