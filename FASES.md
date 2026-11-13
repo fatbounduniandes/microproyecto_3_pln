@@ -17,7 +17,7 @@ solo se hacen cuando él lo pide.
 - [x] **Fase 9 — Evaluación de los modelos finetuneados** (sección 9)
 - [x] **Fase 10 — Comparación y resultados** (sección 10)
 - [x] **Fase 11 — Conclusiones** (sección 11)
-- [x] **Fase 12 — Smoke test en Colab T4/L4**
+- [x] **Fase 12 — Smoke test en Colab**
 - [ ] **Fase 13 — Run final y entrega** (notebook ejecutado listo; pendiente el `.zip`)
 
 ---
@@ -115,8 +115,8 @@ solo se hacen cuando él lo pide.
 - **Lista cuando:** existen los dos pass@1 base y se liberó la GPU entre modelos.
 - **Estado:** completada (D-038). Verificación de `test` (500 problemas, 0 solapamientos, 3 asserts
   y 1 `test_setup_code`), carga en `AMP_DTYPE`, prueba de formato y evaluación de los 500 en Colab
-  L4. Resultados finales: Qwen base 41.2 % (206/500, 579.6 s de generación) y SmolLM2 base 4.6 %
-  (23/500, 629.2 s).
+  A100 40GB. Resultados finales: Qwen base 41.0 % (205/500, 563.5 s de generación) y SmolLM2 base
+  4.8 % (24/500, 614.5 s).
 
 ### Fase 8 — Finetuning con LoRA
 - `LoraConfig(r=16, alpha=16, dropout=0.05, target_modules=["q_proj","k_proj","v_proj","o_proj"])`.
@@ -127,10 +127,10 @@ solo se hacen cuando él lo pide.
   con sus tokenizadores y el historial de entrenamiento.
 - **Estado:** completada (D-039 y D-043). Receta de D-021 con fp32 + autocast, gradient checkpointing,
   5 épocas, monitoreo por época, mejor adaptador e historial en `RESULTADOS_DIR`. Los bloques de
-  validación se arman por índices porque los splits son `Dataset` de Hugging Face. Entrenada en
-  Colab A100 80GB: Qwen 4,358,144 parámetros LoRA (0.28 %) y SmolLM2 6,291,456 (0.37 %); mejor época
-  5 en los dos modelos, con 48 % y 32 % de pass@1 de monitoreo. Adaptadores, tokenizadores e
-  historiales guardados en Drive.
+  validación se arman por índices porque los splits son `Dataset` de Hugging Face. Entrenada desde
+  cero en Colab A100 40GB: Qwen 4,358,144 parámetros LoRA (0.28 %) y SmolLM2 6,291,456 (0.37 %);
+  mejor época 5 en Qwen (48 %, pérdida 0.5037) y 3 en SmolLM2 (34 %, pérdida 0.4799). Adaptadores,
+  tokenizadores e historiales guardados en Drive.
 
 ### Fase 9 — Evaluación de los modelos finetuneados
 - Carga de cada modelo base + su adaptador LoRA.
@@ -140,8 +140,8 @@ solo se hacen cuando él lo pide.
 - **Lista cuando:** existen los dos pass@1 finetuneados y se liberó la GPU entre modelos.
 - **Estado:** completada (D-040). Carga de cada adaptador sobre su base, verificación de configuración
   (r=16, alpha=16, dropout 0.05, q/k/v/o) y evaluación de los 500 con el mismo `evaluar_pass1` en
-  Colab L4. Resultados finales: Qwen + LoRA 43.6 % (218/500, 414.4 s de generación) y SmolLM2 + LoRA
-  31.6 % (158/500, 475.5 s).
+  Colab A100 40GB. Resultados finales: Qwen + LoRA 43.6 % (218/500, 365.3 s de generación) y
+  SmolLM2 + LoRA 30.0 % (150/500, 456.0 s).
 
 ### Fase 10 — Comparación y resultados
 - Tabla de las cuatro configuraciones con pass@1 e intervalo de Wilson al 95 %.
@@ -153,7 +153,8 @@ solo se hacen cuando él lo pide.
 - **Estado:** escrita (D-044). Sección de 12 celdas con tabla de las cuatro configuraciones e
   intervalos de Wilson al 95 %, barras de pass@1, motivos apilados, matriz de transición base → LoRA
   y dos ejemplos cualitativos por modelo más un ejemplo de regresión. No vuelve a generar: usa los
-  resúmenes de las secciones 7 y 9. Cifras finales del run en L4: 41.2 %, 43.6 %, 4.6 % y 31.6 %.
+  resúmenes de las secciones 7 y 9. Cifras finales del run en A100 40GB: 41.0 %, 43.6 %, 4.8 % y
+  30.0 %.
 
 ### Fase 11 — Conclusiones
 - Discusión de resultados, seguimiento del entrenamiento, hiperparámetros y limitaciones.
@@ -162,11 +163,11 @@ solo se hacen cuando él lo pide.
 - **Estado:** escrita. Sección 11 con las conclusiones 1–6: resultado global con intervalos de
   Wilson, aporte del formato, selección de época, limitaciones, qué mide el pass@1 y trabajo futuro.
 
-### Fase 12 — Smoke test en Colab T4/L4
+### Fase 12 — Smoke test en Colab
 - Corrida completa con menos datos o menos épocas para detectar errores rápido.
-- **Lista cuando:** `Run All` termina sin excepciones en T4 o L4.
-- **Estado:** completada (D-046). El run final en L4 ejecutó las 163 celdas, 72 de código, con 0
-  errores y 10 figuras. Los adaptadores se cargaron desde Drive sin reentrenar.
+- **Lista cuando:** `Run All` termina sin excepciones en T4, L4 o A100.
+- **Estado:** completada (D-049). El run final desde cero en A100 40GB ejecutó las 163 celdas, 72 de
+  código, con 0 errores y 10 figuras. La sección 8 entrenó los dos adaptadores y los guardó en Drive.
 
 ### Fase 13 — Run final y entrega
 - `Run All` en L4 o A100 con los hiperparámetros definitivos.

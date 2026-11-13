@@ -571,8 +571,8 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
   existe.
 - **Motivo:** los resúmenes ya traen el código y el motivo de cada problema, así que regenerar sería
   pagar dos veces la parte más cara del proyecto. El intervalo de Wilson evita leer como real una
-  diferencia de dos o tres problemas; en Qwen los intervalos de 41.2 % y 43.6 % se solapan, mientras
-  que en SmolLM2 los de 4.6 % y 31.6 % no. La matriz separa las ganancias de las regresiones y los
+  diferencia de dos o tres problemas; en Qwen los intervalos de 41.0 % y 43.6 % se solapan, mientras
+  que en SmolLM2 los de 4.8 % y 30.0 % no. La matriz separa las ganancias de las regresiones y los
   ejemplos muestran qué cambió en concreto.
 - **Descartado:** volver a generar en la sección 10 (caro y redundante); quedarse solo con la tabla
   agregada (oculta regresiones); escribir a mano los conteos de la matriz (se desactualizan); elegir
@@ -602,6 +602,8 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
   parecidas, no necesariamente idénticas.
 
 ### D-046 · 2026-11-07 · Run final en L4 y sincronización de markdown
+> Reemplazada por D-049 en lo relativo al run final y a las cifras.
+
 - **Decisión:** el run final se hizo en una L4 (22 GB, bf16) con los dos adaptadores ya entrenados. Los
   resultados fueron Qwen base 41.2 % (206/500), Qwen + LoRA 43.6 % (218/500), SmolLM2 base 4.6 %
   (23/500) y SmolLM2 + LoRA 31.6 % (158/500). Las conclusiones de las secciones 7–11, el README y
@@ -649,6 +651,22 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
 - **Consecuencia:** los cambios de código son mínimos pero obligan a una corrida final para refrescar
   las salidas de la sección 2 y del modelo. Después del `Run All` se descarga el ejecutado, se
   verifican los pass@1 y se arma la entrega.
+
+### D-049 · 2026-11-12 · Run final desde cero en A100 40GB
+- **Decisión:** el run final se hizo desde cero en una A100-SXM4-40GB, con 5 épocas por modelo y sin
+  cargar adaptadores previos. Los resultados fueron Qwen base 41.0 % (205/500), Qwen + LoRA 43.6 %
+  (218/500), SmolLM2 base 4.8 % (24/500) y SmolLM2 + LoRA 30.0 % (150/500). Las conclusiones de las
+  secciones 7–11, el README y esta bitácora se actualizaron a esas cifras.
+- **Motivo:** Jean pidió una corrida completa desde cero para que el notebook mostrara el
+  entrenamiento real y entregar esos adaptadores nuevos. La A100 fue la GPU disponible y más rápida;
+  el run terminó con 0 errores, 72/72 celdas ejecutadas y 10 figuras. En Qwen la mejor época fue la 5
+  (48 % de monitoreo, pérdida 0.5037); en SmolLM2 fue la 3 (34 %, pérdida 0.4799).
+- **Descartado:** conservar el run de L4 (no era desde cero); usar A100 80GB (no estaba disponible);
+  mezclar adaptadores viejos con salidas nuevas; repetir el entrenamiento para intentar reproducir
+  las cifras anteriores.
+- **Consecuencia:** D-046 queda reemplazada como run final y por sus cifras. Los adaptadores nuevos de
+  Drive son los que se entregan y el `.zip` debe usar `resultados/notebook.ipynb` con esos
+  checkpoints. El respaldo de L4 queda fuera de la entrega.
 
 ---
 
@@ -769,18 +787,18 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
 - [x] Fase 6: Evaluación pass@1 (generación por lotes, extracción tolerante, sandbox con timeout y
       JSON por problema; D-037 y D-042; corrida completa en Colab A100 80GB).
 - [x] Fase 7: Evaluación base (integridad de `test`, carga en `AMP_DTYPE`, prueba de formato y
-      evaluación de los 500; D-038). Resultados finales en L4: Qwen base 41.2 % (206/500) y SmolLM2
-      base 4.6 % (23/500).
+      evaluación de los 500; D-038). Resultados finales en A100 40GB: Qwen base 41.0 % (205/500) y
+      SmolLM2 base 4.8 % (24/500).
 - [x] Fase 8: Finetuning LoRA (receta de D-021/D-039, gradient checkpointing, monitoreo por época,
-      mejor adaptador e historial; D-043). Adaptadores en Drive, mejor época 5 en los dos modelos;
-      monitoreo final 48 % (Qwen) y 32 % (SmolLM2) sobre los 50 de validación.
+      mejor adaptador e historial; D-043). Entrenamiento desde cero en A100 40GB; mejor época 5 en
+      Qwen (48 %) y 3 en SmolLM2 (34 %), con pérdidas de validación 0.5037 y 0.4799.
 - [x] Fase 9: Evaluación finetuneada (carga de adaptadores, verificación de configuración y
-      evaluación de los 500; D-040). Resultados finales en L4: Qwen + LoRA 43.6 % (218/500) y
-      SmolLM2 + LoRA 31.6 % (158/500).
+      evaluación de los 500; D-040). Resultados finales en A100 40GB: Qwen + LoRA 43.6 % (218/500) y
+      SmolLM2 + LoRA 30.0 % (150/500).
 - [x] Fase 10: Comparación y resultados (tabla con intervalos de Wilson, barras de pass@1, motivos
       apilados, matriz de transición y ejemplos cualitativos; D-044).
 - [x] Fase 11: Conclusiones (1–6 dentro de la sección 11: discusión, limitaciones y trabajo futuro).
-- [x] Fase 12: Smoke test (run completo en L4, 0 errores; D-046).
+- [x] Fase 12: Smoke test (run completo desde cero en A100 40GB, 0 errores; D-049).
 - [ ] Fase 13: Entrega (notebook ejecutado listo; pendiente el `.zip` y la prueba en incógnito).
 
 ---
