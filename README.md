@@ -20,14 +20,14 @@
 ## Resultados
 
 pass@1 sobre los 500 problemas de `test`, con decodificación greedy y el mismo prompt en las
-cuatro configuraciones (corrida en Colab L4):
+cuatro configuraciones (corrida en Colab A100 40GB, entrenamiento desde cero):
 
 | Configuración | Aciertos | pass@1 |
 | :--- | ---: | ---: |
-| Qwen2.5-1.5B base | 206/500 | 41.2 % |
+| Qwen2.5-1.5B base | 205/500 | 41.0 % |
 | Qwen2.5-1.5B + LoRA | 218/500 | **43.6 %** |
-| SmolLM2-1.7B base | 23/500 | 4.6 % |
-| SmolLM2-1.7B + LoRA | 158/500 | **31.6 %** |
+| SmolLM2-1.7B base | 24/500 | 4.8 % |
+| SmolLM2-1.7B + LoRA | 150/500 | **30.0 %** |
 
 La sección 10 del notebook incluye la tabla con intervalos de Wilson al 95 %, la comparación de
 motivos de fallo, la matriz de transición base → LoRA y ejemplos cualitativos.

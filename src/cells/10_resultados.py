@@ -231,25 +231,25 @@ for nombre, resumen_base, resumen_lora in comparaciones:
 # %% [markdown]
 # ### Conclusiones de la comparación
 #
-# **1. El efecto de LoRA depende del modelo.** En Qwen el pass@1 pasó de 41.2 % a 43.6 % (+2.4 pp,
-# +5.8 % relativo) y en SmolLM2 de 4.6 % a 31.6 % (+27.0 pp). Los intervalos de Wilson al 95 % de
-# Qwen son 37.0–45.6 % y 39.3–48.0 %: se solapan, así que con 500 problemas la mejora de Qwen no se
-# puede separar del ruido de muestreo. En SmolLM2 son 3.1–6.8 % y 27.7–35.8 %, sin solapamiento: ahí
+# **1. El efecto de LoRA depende del modelo.** En Qwen el pass@1 pasó de 41.0 % a 43.6 % (+2.6 pp,
+# +6.3 % relativo) y en SmolLM2 de 4.8 % a 30.0 % (+25.2 pp). Los intervalos de Wilson al 95 % de
+# Qwen son 36.8–45.4 % y 39.3–48.0 %: se solapan, así que con 500 problemas la mejora de Qwen no se
+# puede separar del ruido de muestreo. En SmolLM2 son 3.2–7.0 % y 26.1–34.2 %, sin solapamiento: ahí
 # la mejora es clara. El adaptador no aporta lo mismo a los dos, y un solo promedio de las cuatro
 # configuraciones escondería esa diferencia.
 #
-# **2. Los motivos cuentan la misma historia.** En Qwen los errores de ejecución bajaron de 50 a 37
-# y la sintaxis de 9 a 4, mientras los `assert` subieron de 235 a 241: el adaptador produce código
-# un poco más válido y algo más de código que llega a ejecutarse. En SmolLM2 la sintaxis cayó de 397
-# a 5 y los `assert` subieron de 36 a 291: el problema dejó de ser escribir Python y pasó a ser
+# **2. Los motivos cuentan la misma historia.** En Qwen los errores de ejecución bajaron de 56 a 36
+# y la sintaxis de 7 a 3, mientras los `assert` subieron de 232 a 243: el adaptador produce código
+# un poco más válido y algo más de código que llega a ejecutarse. En SmolLM2 la sintaxis cayó de 396
+# a 3 y los `assert` subieron de 33 a 301: el problema dejó de ser escribir Python y pasó a ser
 # resolver el problema.
 #
 # **3. La ganancia neta no es la historia completa.** La matriz de transición muestra cuántos
-# problemas se ganan y cuántos se pierden; el saldo es +12 en Qwen y +135 en SmolLM2, que coincide con
+# problemas se ganan y cuántos se pierden; el saldo es +13 en Qwen y +126 en SmolLM2, que coincide con
 # la diferencia de aciertos. Mirar solo el saldo ocultaría las regresiones, y mirar solo los ejemplos
 # bonitos ocultaría que el adaptador también puede empeorar problemas que la base resolvía.
 #
-# **4. El costo es razonable.** La evaluación de 500 problemas tarda entre 28.7 y 29.1 s de ejecución
+# **4. El costo es razonable.** La evaluación de 500 problemas tarda entre 28.6 y 32.6 s de ejecución
 # en el sandbox para las cuatro configuraciones, y la generación bajó en los dos modelos finetuneados,
 # una señal compatible con respuestas más cortas. Entrenar cinco épocas es barato; lo caro es generar,
 # y eso ya está resuelto con lotes y con un límite de tokens bien dimensionado.

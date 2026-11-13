@@ -385,10 +385,10 @@ else:
 # la pérdida ya no mejoraba. Si hubiéramos elegido por pérdida, nos habríamos quedado con la 4 y con
 # dos puntos menos de pass@1.
 #
-# **3. En SmolLM2 el desempate importó.** La pérdida de entrenamiento bajó de 0.7038 a 0.4102 y la
-# de validación de 0.5556 a 0.4754. El pass@1 de monitoreo fue 28 %, 32 %, 30 %, 28 % y 32 %: las
-# épocas 2 y 5 empataron en aciertos, y ganó la 5 por menor pérdida de validación (0.4754 contra
-# 0.4899). La regla de desempate no fue decorativa: decidió qué adaptador se guarda.
+# **3. En SmolLM2 el desempate importó.** La pérdida de entrenamiento bajó de 0.7042 a 0.4102 y la
+# de validación de 0.5555 a 0.4757. El pass@1 de monitoreo fue 28 %, 34 %, 34 %, 30 % y 30 %: las
+# épocas 2 y 3 empataron en aciertos, y ganó la 3 por menor pérdida de validación (0.4799 contra
+# 0.4898). La regla de desempate no fue decorativa: decidió qué adaptador se guarda.
 #
 # **4. La selección se hizo solo con validación.** `test` no participó en la elección de época ni de
 # hiperparámetros. En cada mejora se guardaron el adaptador, el tokenizador y el historial, y la
