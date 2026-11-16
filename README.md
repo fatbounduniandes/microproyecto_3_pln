@@ -30,7 +30,9 @@ cuatro configuraciones (corrida en Colab A100 40GB, entrenamiento desde cero):
 | SmolLM2-1.7B + LoRA | 150/500 | **30.0 %** |
 
 La sección 10 del notebook incluye la tabla con intervalos de Wilson al 95 %, la comparación de
-motivos de fallo, la matriz de transición base → LoRA y ejemplos cualitativos.
+motivos de fallo, la matriz de transición base → LoRA y ejemplos cualitativos. **Qwen2.5-1.5B**
+obtiene el mejor desempeño tanto en zero-shot como con LoRA; **SmolLM2-1.7B** es el que más mejora
+con el finetuning (+25.2 pp).
 
 ## Cómo ejecutar
 

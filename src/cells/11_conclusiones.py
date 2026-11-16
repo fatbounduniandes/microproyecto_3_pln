@@ -1,14 +1,16 @@
 # %% [markdown]
 # ## 11. Conclusiones
 #
-# **1. LoRA cumple el objetivo, sobre todo en SmolLM2.** Qwen2.5-1.5B pasó de 41.0 % a 43.6 %
-# (+2.6 pp) y SmolLM2-1.7B de 4.8 % a 30.0 % (+25.2 pp) sobre los mismos 500 problemas de `test`.
-# El resultado no es un modelo nuevo: es el mismo base con un adaptador de 4.3 y 6.3 millones de
-# parámetros que se puede guardar, compartir y volver a cargar. En SmolLM2 el cambio es grande porque
-# el punto de partida era muy bajo; en Qwen es moderado porque el base ya resolvía cuatro de cada
-# diez problemas. Los intervalos de Wilson al 95 % lo confirman: en Qwen se solapan (36.8–45.4 % y
-# 39.3–48.0 %), así que el +2.6 pp es compatible con el ruido de muestreo; en SmolLM2 no se solapan
-# (3.2–7.0 % y 26.1–34.2 %).
+# **1. Qwen2.5-1.5B obtiene el mejor desempeño global y LoRA aporta sobre todo en SmolLM2.**
+# Qwen2.5-1.5B pasó de 41.0 % a 43.6 % (+2.6 pp) y SmolLM2-1.7B de 4.8 % a 30.0 % (+25.2 pp) sobre
+# los mismos 500 problemas de `test`: Qwen es el mejor de los dos tanto en su versión original como
+# tras el finetuning, mientras que SmolLM2 es el que más mejora con el ajuste. El resultado no es un
+# modelo nuevo: es el mismo base con un adaptador de 4.3 y 6.3 millones de parámetros que se puede
+# guardar, compartir y volver a cargar. En SmolLM2 el cambio es grande porque el punto de partida
+# era muy bajo; en Qwen es moderado porque el base ya resolvía cuatro de cada diez problemas. Los
+# intervalos de Wilson al 95 % lo confirman: en Qwen se solapan (36.8–45.4 % y 39.3–48.0 %), así que
+# el +2.6 pp es compatible con el ruido de muestreo; en SmolLM2 no se solapan (3.2–7.0 % y
+# 26.1–34.2 %).
 #
 # **2. El formato del prompt fue parte de la solución.** Incluir el nombre y la firma de la función,
 # y entrenar con el código de referencia completo más el EOS, permitió que los dos modelos escribieran
@@ -44,6 +46,7 @@
 # declararlo como un experimento aparte.
 #
 # En resumen: el proyecto deja un notebook reproducible, dos adaptadores LoRA y una comparación
-# honesta de cuatro configuraciones. La conclusión principal es que LoRA no hace magia con 374
+# honesta de cuatro configuraciones. Qwen2.5-1.5B es el mejor modelo en la tarea (43.6 % con LoRA y
+# 41.0 % base), y la conclusión principal sobre el finetuning es que LoRA no hace magia con 374
 # ejemplos, pero sí corrige el formato y destraba a un modelo que sin entrenamiento casi no podía
 # competir.

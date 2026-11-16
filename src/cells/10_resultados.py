@@ -231,12 +231,14 @@ for nombre, resumen_base, resumen_lora in comparaciones:
 # %% [markdown]
 # ### Conclusiones de la comparación
 #
-# **1. El efecto de LoRA depende del modelo.** En Qwen el pass@1 pasó de 41.0 % a 43.6 % (+2.6 pp,
-# +6.3 % relativo) y en SmolLM2 de 4.8 % a 30.0 % (+25.2 pp). Los intervalos de Wilson al 95 % de
-# Qwen son 36.8–45.4 % y 39.3–48.0 %: se solapan, así que con 500 problemas la mejora de Qwen no se
+# **1. Qwen2.5-1.5B es el mejor modelo en la tarea, y el aporte de LoRA depende de la familia.** En
+# las dos versiones Qwen supera con claridad a SmolLM2: 41.0 % contra 4.8 % en zero-shot y 43.6 %
+# contra 30.0 % tras el finetuning. Con LoRA, Qwen sube de 41.0 % a 43.6 % (+2.6 pp, +6.3 %
+# relativo) y SmolLM2 de 4.8 % a 30.0 % (+25.2 pp, +525.0 % relativo). Los intervalos de Wilson al
+# 95 % de Qwen son 36.8–45.4 % y 39.3–48.0 %: se solapan, así que con 500 problemas su mejora no se
 # puede separar del ruido de muestreo. En SmolLM2 son 3.2–7.0 % y 26.1–34.2 %, sin solapamiento: ahí
-# la mejora es clara. El adaptador no aporta lo mismo a los dos, y un solo promedio de las cuatro
-# configuraciones escondería esa diferencia.
+# la mejora es clara. SmolLM2 es el que más gana con el ajuste, pero no alcanza a Qwen; LoRA reduce
+# la brecha entre las dos familias sin cerrarla.
 #
 # **2. Los motivos cuentan la misma historia.** En Qwen los errores de ejecución bajaron de 56 a 36
 # y la sintaxis de 7 a 3, mientras los `assert` subieron de 232 a 243: el adaptador produce código
