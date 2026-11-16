@@ -668,6 +668,25 @@ Formato: `D-XXX · fecha · decisión · motivo · alternativas descartadas · c
   Drive son los que se entregan y el `.zip` debe usar `resultados/notebook.ipynb` con esos
   checkpoints. El respaldo de L4 queda fuera de la entrega.
 
+### D-050 · 2026-11-16 · Conclusión explícita del mejor modelo y README de entrega
+- **Decisión:** la sección 10 abre sus conclusiones con el ranking de las dos familias (Qwen2.5-1.5B
+  es el mejor en la tarea: 41.0 % base y 43.6 % con LoRA, frente a 4.8 % y 30.0 % de SmolLM2), y la
+  sección 11 repite esa conclusión al inicio y en el cierre. El `.zip` de entrega lleva un
+  `README.md` propio, orientado al evaluador, que explica el contenido del paquete, cómo ejecutarlo
+  en Colab y las cifras finales. No se tocó ninguna celda de código ni ninguna salida: el notebook
+  ejecutado solo cambió en dos celdas markdown.
+- **Motivo:** la auditoría contra el PDF encontró que la sección 10 pedía explícitamente "una
+  conclusión sobre cuál de los dos modelos es mejor en la tarea" (§5.1) y lo mismo en §4.3, pero el
+  texto solo analizaba el efecto de LoRA sin escribir el ranking. El README del repositorio menciona
+  `src/cells/` y `build_notebook.py`, que no existen dentro del zip.
+- **Descartado:** dejar la conclusión implícita en los números (riesgo de perder puntos en
+  "Resultados obtenidos"); reejecutar el notebook en Colab (innecesario: el cambio es solo de
+  markdown); incluir el README del repositorio en el zip (confunde al evaluador).
+- **Consecuencia:** `resultados/notebook.ipynb` conserva las 72 celdas de código y sus 72 salidas del
+  run en A100; solo cambian dos celdas markdown (secciones 10 y 11). El zip se regeneró con el
+  notebook sincronizado, los dos adaptadores y un README de entrega; SHA-256
+  `8cb794633946b17792ffdbf6be1f1f2dc0e9b665af157da5f484da5b5ac725c3`.
+
 ---
 
 ## 4. Reglas duras del proyecto (no negociables)
@@ -799,7 +818,9 @@ No versionado: `PDF/`, `checkpoint_*`, `*.safetensors`, `*.zip`, `resultados/`, 
       apilados, matriz de transición y ejemplos cualitativos; D-044).
 - [x] Fase 11: Conclusiones (1–6 dentro de la sección 11: discusión, limitaciones y trabajo futuro).
 - [x] Fase 12: Smoke test (run completo desde cero en A100 40GB, 0 errores; D-049).
-- [ ] Fase 13: Entrega (notebook ejecutado listo; pendiente el `.zip` y la prueba en incógnito).
+- [x] Fase 13: Entrega (notebook ejecutado sincronizado con la conclusión explícita del mejor modelo;
+      `.zip` armado y verificado con notebook + dos adaptadores + README de entrega; D-050). Pendiente
+      la prueba en incógnito del enlace de Drive.
 
 ---
 

@@ -173,5 +173,6 @@ solo se hacen cuando él lo pide.
 - `Run All` en L4 o A100 con los hiperparámetros definitivos.
 - `.zip` con notebook ejecutado + los dos adaptadores, subido a Drive con permiso de lector.
 - **Lista cuando:** la descarga funciona en modo incógnito y el zip contiene todo lo exigido.
-- **Estado:** notebook ejecutado listo (`resultados/notebook.ipynb`). Pendiente el `.zip` y la prueba
-  en incógnito.
+- **Estado:** notebook ejecutado listo (`resultados/notebook.ipynb`) y `.zip` armado y verificado con
+  el notebook, los dos adaptadores y un README de entrega (D-050). Pendiente la prueba en incógnito
+  del enlace de Drive.
